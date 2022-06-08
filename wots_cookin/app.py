@@ -8,8 +8,10 @@ from google.cloud import storage
 from google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
 
-stt_button  = Button(label="Speak", width=100)
+#audio record button
+stt_button  = Button(label="Record", width=100)
 
+#java script to run audio recording
 stt_button.js_on_event("button_click", CustomJS(code="""
 const timeMilliSec = 10000 //Fixed 10sec recording ... change here the value
 navigator.mediaDevices.getUserMedia({ audio: true })
@@ -39,6 +41,7 @@ navigator.mediaDevices.getUserMedia({ audio: true })
   });
   """))
 
+#code to extract audio results from JS to python
 result = streamlit_bokeh_events(
     stt_button,
     events="GET_AUDIO_BASE64",
