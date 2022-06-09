@@ -29,7 +29,7 @@ def load_data(nrows = None):
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    full_stopwords = list(pd.read_csv("full_stopwords.csv")['0'])
+    full_stopwords = list(pd.read_csv("../notebooks/full_stopwords.csv")['0'])
     print(f'Returning list of {len(full_stopwords)} stopwords')
     return full_stopwords
 
@@ -68,7 +68,7 @@ def remove_stopwords(ingredient_list):
     return ingredient_list
 
 
-def load_clean_data(nrows = None):
+def load_clean_data(additional = False, nrows = None):
     """
     Function to load data with formatting and stopwords
     Takes optional parameter with number of rows and returns a pandas dataframe
@@ -77,5 +77,32 @@ def load_clean_data(nrows = None):
     print('Cleaning formatting...')
     df['Bag_Of_Ingredients'] = df['Cleaned_Ingredients'].map(remove_formatting)
     df['Bag_Of_Ingredients'] = remove_stopwords(df['Bag_Of_Ingredients'])
+    if additional == True:
+        df = additional_formatting(df)
     print('Returning dataframe with Bag_Of_Ingredients')
+    return df
+
+def additional_formatting(df):
+    """
+    Perform additional formatting to make compatible with basic search function
+    NB: this will need to be streamlined into other functions later subject to
+    final search model
+    """
+
+    def clean_list(ingredient_list):
+        """
+        Function to convert list in string format to list
+        """
+        ingredient_list = ingredient_list[2:-2]
+        ingredient_list = ingredient_list.split("', '")
+        return ingredient_list
+
+    #convert cleaned ingredients string to a list
+    df['Cleaned_Ingredients'] = df['Cleaned_Ingredients'].map(clean_list)
+
+    #remove recipes with less than 10 ingredients
+    df['length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
+    df = df[df['length']>=10]
+    df.reset_index(inplace=True)
+
     return df
