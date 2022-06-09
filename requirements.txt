@@ -9,6 +9,7 @@ numpy
 pandas
 scikit-learn
 nltk.tokenize
+gensim
 
 # tests/linter
 black
@@ -29,3 +30,16 @@ joblib
 memoized-property
 termcolor
 string
+
+# voice recording and speech to text API
+base64
+streamlit
+bokeh.models.widgets
+bokeh.models
+streamlit_bokeh_events
+pydub
+google.cloud
+google_api
+google.cloud
+
+# ffmpeg => needs to be brew installed
