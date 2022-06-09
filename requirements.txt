@@ -8,7 +8,7 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
-nltk.tokenize
+# nltk.tokenize
 gensim
 
 # tests/linter
@@ -29,10 +29,10 @@ six>=1.14
 joblib
 memoized-property
 termcolor
-string
+# string
 
 # voice recording and speech to text API
-base64
+# base64
 streamlit
 bokeh.models.widgets
 bokeh.models
@@ -40,6 +40,5 @@ streamlit_bokeh_events
 pydub
 google.cloud
 google_api
-google.cloud
 
 # ffmpeg => needs to be brew installed
