@@ -6,59 +6,121 @@ import pandas as pd
 
 
 class Trainer():
-    #Define the class Trainer by the bag_of_ingredients and available_ingredients
-    def __init__(self,X,y):
+    """
+    Intiatiate the Trainer class so there is model template
+    """
+    def __init__(self):
         self.words = None
-        self.bag_of_ingredients = X
-        self.available_ingredients = y
-        self.recipes_embed_list = None
+        self.recipes_vector_list = None
+        self.vector_size = 0
+        self.min_count = 0
 
-
-    #Define the Word2Vec model used
-    def set_model(self):
-        self.model = Word2Vec(self.bag_of_ingredients,vector_size=50,min_count=5)
-
-    #Get the words inside the model
-    def get_model_words(self):
+    def set_corpus(self, bag_of_ingredients):
+        """
+        Trains the Word2Vec model using a bag_of_ingredients for the corpus
+        Optional parameters:
+        - vector_size = 50 as default
+        - min_count = minimum count before an ingredient is considered
+        part of corpus. 5 as defalt
+        """
+        self.model = Word2Vec(bag_of_ingredients
+                              ,vector_size=self.vector_size
+                              ,min_count=self.min_count)
+        #Get the words inside the model
         self.words = self.model.wv.__dict__["index_to_key"]
+        print("Recipes corpus set")
+        return self
 
-    #Given the model above, get the average "matrix" for a list of words/sentence:
-    def getRecipeEmbedding(self,sentence):
+    def get_ingredients_vector(self,ingredients):
+        """
+        Vectorises a list of ingredients and returns an array of average vectors
+        Optional parameters:
+        - vector_size = 50 as default
+        """
         countFound = 0
-        embeddingList = []
-        for wordx in sentence:
-            if wordx in self.words:
-                vector1 = self.model.wv[wordx]
-                embeddingList.append(vector1)
+        vector_list = []
+        # Vectorises each ingredient in a list of ingredients
+        for word in ingredients:
+            if word in self.words:
+                vector = self.model.wv[word]
+                vector_list.append(vector)
                 countFound+=1
-        return np.true_divide(sum(embeddingList), countFound)
+        if countFound > 0:
+            # Calculates a list of average vectors
+            average_vector = np.true_divide(sum(vector_list), countFound)
+        else:
+            # Returns default array of zeros based on the number of vectors if
+            # ingredients are not inside of corpus
+            average_vector = np.zeros(self.vector_size,)
+        return average_vector
 
     #Given a list of recipes, get a list of each matrix:
-    def recipes_list(self):
-        recipes_embed_list = []
-        for i in self.bag_of_ingredients:
-            if self.getRecipeEmbedding(i).size == 1:
-                recipes_embed_list.append(np.zeros(50,))
-            else:
-                recipes_embed_list.append(self.getRecipeEmbedding(i))
-        self.recipes_embed_list = recipes_embed_list
+    def get_recipes_vectors(self, bag_of_ingredients):
+        """
+        Takes a list of ingredients and vectorises them
+        """
+        recipes_vector_list = []
+        for i in bag_of_ingredients:
+            recipes_vector_list.append(self.get_ingredients_vector(i))
+        self.recipes_vector_list = recipes_vector_list
+        print(f"{len(self.recipes_vector_list)} recipes vectorized")
+        return self
 
-    #Given a list of ingredients, get a matrix with the cosine similarity with a list of recipes:
-    def similar_recipe(self):
+    def get_similarity_score(self, ingredients):
+        """
+        Takes a list of ingredients and returns a numpy array of similar scores
+        relative to the recipes' bag of ingredients based on the cosine
+        similarity
+        """
+        # Cosine similarity score list
         cos_sim = []
-        for i in range(0,len(self.recipes_embed_list)):
-            if sum(self.recipes_embed_list[i]) == 0.0:
+        # Calculate the cosine similarity of the ingredients compared to each
+        # vectorized recipe stored in the model
+        for i in range(0,len(self.recipes_vector_list)):
+            if sum(self.recipes_vector_list[i]) == 0.0:
+                # Ignore recipes where there is no similarity
                 cos_sim.append(0)
             else:
-                cos_sim.append(np.dot(self.getRecipeEmbedding(self.available_ingredients),self.recipes_embed_list[i])/(norm(self.getRecipeEmbedding(self.available_ingredients))*norm(self.recipes_embed_list[i])))
-        dis_array = np.array(cos_sim)
-        return dis_array
+                cos_sim.append(
+                    np.dot(
+                        self.get_ingredients_vector(ingredients)
+                        ,self.recipes_vector_list[i])
+                    /(norm(
+                        self.get_ingredients_vector(ingredients)
+                        )
+                      *norm(self.recipes_vector_list[i])))
+        # Returns the cosine similarity score as an numpy array
+        sim_score_list = np.array(cos_sim)
+        return sim_score_list
 
-    #Given a matrix of cosine similaritys between ingredients and recipes, returns a dataframe with the title and ingredients of the most similar recipe in a recipes dataframe:
-    def getListofRecipes(self,recipes_df,n):
-        cos_sim = self.similar_recipe()
-        n_index = (-cos_sim).argsort()[:n]
-        titles = []
-        for i in n_index:
-            titles.append(recipes_df.iloc[i,1:3])
-        return pd.DataFrame(titles)
+    def get_similar_recipes(self,ingredients, df, nrow=100):
+        """
+        Takes a list of ingredients, a pandas dataframe, and the number of rows and
+        returns the recipes with the highest similarity score
+        Optional parameter:
+        nrows = number of matches returned. Defaults to 100
+        """
+        # Get the similarity score
+        cos_sim = self.get_similarity_score(ingredients)
+        # Get the index for the most similar matches
+        index = (-cos_sim).argsort()[:nrow]
+        results = []
+        # Returns the results in a dataframe
+        for i in index:
+            results.append(df.iloc[i,:])
+        return pd.DataFrame(results)
+
+    def train_model(self,bag_of_ingredients, vector_size=50, min_count=5):
+        """
+        Trains the Word2Vec model using a bag_of_ingredients for the corpus
+        Optional parameters:
+        - vector_size = 50 as default
+        - min_count = minimum count before an ingredient is considered
+        part of corpus. 5 as defalt
+        """
+        self.vector_size = vector_size
+        self.min_count = min_count
+        self.set_corpus(bag_of_ingredients)
+        self.get_recipes_vectors(bag_of_ingredients)
+        print("Model trained!")
+        return self
