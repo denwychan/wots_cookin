@@ -95,8 +95,8 @@ class Trainer():
 
     def get_similar_recipes(self,ingredients, df, nrow=100):
         """
-        Takes a list of ingredients, a pandas dataframe, and the number of rows and
-        returns the recipes with the highest similarity score
+        Takes a list of ingredients, a pandas dataframe, and the number of rows
+        and returns the recipes with the highest similarity score
         Optional parameter:
         nrows = number of matches returned. Defaults to 100
         """
