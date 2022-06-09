@@ -100,7 +100,7 @@ class Trainer():
         Optional parameter:
         nrows = number of matches returned. Defaults to 100
         """
-        # Get the similarity score
+        # Get the cosine similarity score
         cos_sim = self.get_similarity_score(ingredients)
         # Get the index for the most similar matches
         index = (-cos_sim).argsort()[:nrow]
