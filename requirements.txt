@@ -8,6 +8,7 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
+nltk.tokenize
 
 # tests/linter
 black
@@ -38,4 +39,5 @@ pydub
 google.cloud
 google_api
 google.cloud
+
 # ffmpeg => needs to be brew installed
