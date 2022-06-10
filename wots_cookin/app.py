@@ -7,13 +7,15 @@ from pydub import AudioSegment
 from google.cloud import storage
 from google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
+from data import load_clean_data
+from search import shortlist_recipes
 
 #audio record button
 stt_button  = Button(label="Record", width=100)
 
 #java script to run audio recording
 stt_button.js_on_event("button_click", CustomJS(code="""
-const timeMilliSec = 10000 //Fixed 10sec recording ... change here the value
+const timeMilliSec = 20000 //Fixed 20sec recording ... change here the value
 navigator.mediaDevices.getUserMedia({ audio: true })
   .then(stream => {
     const mediaRecorder = new MediaRecorder(stream);
@@ -81,3 +83,19 @@ if result:
             output = speech_to_text(config, audio)
 
             st.write(f'Recording: {output}')
+
+            #loading clean dataframe of recipes
+            df = load_clean_data(additional=True)
+
+            #using search function to find no.1 matching recipe
+            top_recipes = shortlist_recipes(df, output, df.index)
+            no_1 = top_recipes[0][0]
+            title = df.loc[no_1, 'Title']
+            ingredients = df.loc[no_1, 'Cleaned_Ingredients']
+            instructions = df.loc[no_1, 'Instructions']
+
+            #printing no.1 recipe (title, ingredients and instructions)
+            st.write(f'{title}')
+            st.write(f'Ingredients: {ingredients}')
+            st.write('Instructions')
+            st.write(f'{instructions}')
