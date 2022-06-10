@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from numpy import dot
 from numpy.linalg import norm
+from wots_cookin.data import load_clean_data
 
 class Doc2VecTrainer():
     """
@@ -95,3 +96,16 @@ class Doc2VecTrainer():
         self.set_corpus(bag_of_ingredients)
         print("Model trained!")
         return self
+
+def model_tocsv(vector_size=50
+                ,min_count=5):
+    # Train Word2Vec model to enrich recipes bank
+    df = load_clean_data()
+    boi = df['Bag_Of_Ingredients']
+
+    # Train model
+    model = Doc2VecTrainer()
+    model.train_model(boi, vector_size, min_count)
+    df['Vector_List'] = model.recipes_vector_list
+    df.to_csv("enriched_recipes.csv", index=False)
+    print('Recipes with vectors created!')
