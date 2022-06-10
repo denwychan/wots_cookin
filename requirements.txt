@@ -31,11 +31,7 @@ termcolor
 
 # voice recording and speech to text API
 streamlit
-bokeh.models.widgets
-bokeh.models
+bokeh
 streamlit_bokeh_events
 pydub
-google.cloud
-google_api
-
-# ffmpeg => needs to be brew installed
+google-cloud
