@@ -21,12 +21,12 @@ config = speech.RecognitionConfig(language_code = "en-GB",
             model = 'default',
             speech_contexts = [{
                 "phrases": top_list,
-                "boost": 10
+                "boost": 12
                 }, {
                 "phrases": mid_list,
-                "boost": 6
+                "boost": 10
                 }, {
                 "phrases": bottom_list,
-                "boost": 3
+                "boost": 8
                 }]
             )
