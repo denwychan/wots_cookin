@@ -8,44 +8,58 @@ from google.cloud import storage
 from google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
 from data import load_clean_data
-from search import shortlist_recipes
+
+# from search import shortlist_recipes
 
 #audio record button
-stt_button  = Button(label="Record", width=100)
+record_button  = Button(label="Record", width=100)
 
 #java script to run audio recording
-stt_button.js_on_event("button_click", CustomJS(code="""
-const timeMilliSec = 20000 //Fixed 20sec recording ... change here the value
-navigator.mediaDevices.getUserMedia({ audio: true })
-  .then(stream => {
-    const mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.start();
-    const audioChunks = [];
-    mediaRecorder.addEventListener("dataavailable", event => {
-      audioChunks.push(event.data);
+
+record_button.js_on_event("button_click", CustomJS(code="""
+//Get button from the DOM
+var button = document.getElementsByTagName('button')[0];
+
+if (button.textContent == "Record") {
+    const timeMilliSec = 10000 //Fixed 10sec recording ... change here the value
+    navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+        window.mediaRecorder = new MediaRecorder(stream);
+        window.mediaRecorder.start();
+        const audioChunks = [];
+        window.mediaRecorder.addEventListener("dataavailable", event => {
+            audioChunks.push(event.data);
+        });
+        window.mediaRecorder.addEventListener("stop", () => {
+            //convert audioBuffer to wav
+            const audioBlob = new Blob(audioChunks, {type:'audio/wav'});
+            //create base64 reader
+            var reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = function() {
+                //read base64
+                var base64data = reader.result;
+                //send data to streamlit
+                document.dispatchEvent(new CustomEvent("GET_AUDIO_BASE64", {detail: base64data}));
+            }
+        });
+        //Automatic stop after a set timeframe
+        //setTimeout(() => {
+        //window.mediaRecorder.stop();
+        //}, timeMilliSec);
+
     });
-    mediaRecorder.addEventListener("stop", () => {
-      //convert audioBuffer to wav
-      const audioBlob = new Blob(audioChunks, {type:'audio/wav'});
-      //create base64 reader
-      var reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      reader.onloadend = function() {
-        //read base64
-        var base64data = reader.result;
-        //send data to streamlit
-        document.dispatchEvent(new CustomEvent("GET_AUDIO_BASE64", {detail: base64data}));
-      }
-    });
-    setTimeout(() => {
-      mediaRecorder.stop();
-    }, timeMilliSec);
-  });
-  """))
+    button.textContent = "Stop";
+} else {
+    mediaRecorder.stop();
+    button.textContent = "Record";
+}
+"""))
+
 
 #code to extract audio results from JS to python
 result = streamlit_bokeh_events(
-    stt_button,
+    record_button,
     events="GET_AUDIO_BASE64",
     key="listen",
     refresh_on_update=False,
@@ -85,17 +99,18 @@ if result:
             st.write(f'Recording: {output}')
 
             #loading clean dataframe of recipes
-            df = load_clean_data(additional=True)
+
+            # df = load_clean_data(additional=True)
 
             #using search function to find no.1 matching recipe
-            top_recipes = shortlist_recipes(df, output, df.index)
-            no_1 = top_recipes[0][0]
-            title = df.loc[no_1, 'Title']
-            ingredients = df.loc[no_1, 'Cleaned_Ingredients']
-            instructions = df.loc[no_1, 'Instructions']
+            # top_recipes = shortlist_recipes(df, output, df.index)
+            # no_1 = top_recipes[0][0]
+            # title = df.loc[no_1, 'Title']
+            # ingredients = df.loc[no_1, 'Cleaned_Ingredients']
+            # instructions = df.loc[no_1, 'Instructions']
 
             #printing no.1 recipe (title, ingredients and instructions)
-            st.write(f'{title}')
-            st.write(f'Ingredients: {ingredients}')
-            st.write('Instructions')
-            st.write(f'{instructions}')
+            # st.write(f'{title}')
+            # st.write(f'Ingredients: {ingredients}')
+            # st.write('Instructions')
+            # st.write(f'{instructions}')
