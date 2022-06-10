@@ -8,12 +8,14 @@ from google.cloud import storage
 from google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
 from data import load_clean_data
+
 # from search import shortlist_recipes
 
 #audio record button
 record_button  = Button(label="Record", width=100)
 
 #java script to run audio recording
+
 record_button.js_on_event("button_click", CustomJS(code="""
 //Get button from the DOM
 var button = document.getElementsByTagName('button')[0];
@@ -45,6 +47,7 @@ if (button.textContent == "Record") {
         //setTimeout(() => {
         //window.mediaRecorder.stop();
         //}, timeMilliSec);
+
     });
     button.textContent = "Stop";
 } else {
@@ -96,6 +99,7 @@ if result:
             st.write(f'Recording: {output}')
 
             #loading clean dataframe of recipes
+
             # df = load_clean_data(additional=True)
 
             #using search function to find no.1 matching recipe
