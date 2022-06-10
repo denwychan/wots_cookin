@@ -1,6 +1,7 @@
 import pandas as pd
 import string
 from nltk.tokenize import word_tokenize
+from dietary_req import dietary_tagging
 
 def load_data(nrows = None):
     """Method to get data from the recipes csv
@@ -67,8 +68,24 @@ def remove_stopwords(ingredient_list):
     print("Order's up!")
     return ingredient_list
 
+def filter_ingredient_count(df, limit):
+    """
+    Removes recipes from the dataframe that contain less ingredients than the filter
+    """
+    df['length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
+    df = df[df['length']>=limit]
+    df.reset_index(inplace=True)
+    return df
 
-def load_clean_data(additional = False, nrows = None):
+def basic_clean(sentence):
+    """
+    Function to convert list in string format to list
+    """
+    sentence = sentence[2:-2]
+    sentence = sentence.split("', '")
+    return sentence
+
+def load_clean_data(limit = 0, nrows = None):
     """
     Function to load data with formatting and stopwords
     Takes optional parameter with number of rows and returns a pandas dataframe
@@ -77,32 +94,8 @@ def load_clean_data(additional = False, nrows = None):
     print('Cleaning formatting...')
     df['Bag_Of_Ingredients'] = df['Cleaned_Ingredients'].map(remove_formatting)
     df['Bag_Of_Ingredients'] = remove_stopwords(df['Bag_Of_Ingredients'])
-    if additional == True:
-        df = additional_formatting(df)
+    df['Cleaned_Ingredients'] = df['Cleaned_Ingredients'].map(basic_clean)
+    df = filter_ingredient_count(df, limit)
+    df = dietary_tagging(df)
     print('Returning dataframe with Bag_Of_Ingredients')
-    return df
-
-def additional_formatting(df):
-    """
-    Perform additional formatting to make compatible with basic search function
-    NB: this will need to be streamlined into other functions later subject to
-    final search model
-    """
-
-    def clean_list(ingredient_list):
-        """
-        Function to convert list in string format to list
-        """
-        ingredient_list = ingredient_list[2:-2]
-        ingredient_list = ingredient_list.split("', '")
-        return ingredient_list
-
-    #convert cleaned ingredients string to a list
-    df['Cleaned_Ingredients'] = df['Cleaned_Ingredients'].map(clean_list)
-
-    #remove recipes with less than 10 ingredients
-    df['length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
-    df = df[df['length']>=10]
-    df.reset_index(inplace=True)
-
     return df
