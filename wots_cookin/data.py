@@ -82,7 +82,12 @@ def basic_clean(sentence):
     Function to convert list in string format to list
     """
     sentence = sentence[2:-2]
-    sentence = sentence.split("', '")
+    if "', '" in sentence:
+        sentence = sentence.split("', '")
+    else:
+        sentence = sentence.replace('\n', '')
+        sentence = sentence.split()
+        sentence = [float(vector) for vector in sentence]
     return sentence
 
 def load_clean_data(limit = 0, nrows = None):
