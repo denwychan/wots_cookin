@@ -1,6 +1,8 @@
 import pandas as pd
 import string
 from nltk.tokenize import word_tokenize
+from collections import namedtuple
+
 
 def load_data(nrows = None):
     """Method to get data from the recipes csv
@@ -106,3 +108,14 @@ def additional_formatting(df):
     df.reset_index(inplace=True)
 
     return df
+
+def doc2vec_preprocessing(ingredient_list):
+    """
+    Function to convert list to analyzedDocument format
+    """
+    docs = []
+    analyzedDocument = namedtuple('AnalyzedDocument', 'words tags')
+    for i, text in enumerate(ingredient_list):
+        tags = [i]
+        docs.append(analyzedDocument(text, tags))
+    return docs
