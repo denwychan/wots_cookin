@@ -1,18 +1,18 @@
 import base64
 import streamlit as st
 import pandas as pd
+import numpy as np
+from PIL import Image
 from bokeh.models.widgets import Button
 from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
 from pydub import AudioSegment
-from google.cloud import storage
-from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
+from wots_cookin.google_api import speech_to_text, config
 from wots_cookin.search import shortlist_recipes
 from wots_cookin.word2vec_trainer import Trainer
-from PIL import Image
-import numpy as np
-
+from wots_cookin.search import shortlist_recipes
+from wots_cookin.display import print_details
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -110,7 +110,6 @@ if result:
             output = speech_to_text(config, audio)
 
             st.write(f'Recording: {output}')
-            print(output)
 
             #loading clean dataframe of recipes
             df = pd.read_pickle("raw_data/enriched_recipes.pkl")
@@ -127,21 +126,17 @@ if result:
 
             #using search function to find no.1 matching recipe
             top_recipes = shortlist_recipes(df, output, df.index)
-            no_1 = top_recipes[0][0]
-            title = df.loc[no_1, 'Title']
-            ingredients = df.loc[no_1, 'Cleaned_Ingredients']
-            instructions = df.loc[no_1, 'Instructions']
-            recipe_image = df.loc[no_1, 'Image_Name']
 
-            #printing no.1 recipe (title, ingredients and instructions)
-            st.write(f'{title}')
-            st.write(f'Ingredients: {ingredients}')
-            st.write('Instructions')
-            st.write(f'{instructions}')
-
+            #print list of recipes including ingredients (flagging missing ingredients)
+            #and instructions
+            st.title('Recipe Shortlist Details:')
+            for recipe in top_recipes:
+                print_details(df, output, recipe)
 
             #display no.1 image -> Check that the directory is correct
-            direct = f'../raw_data/Food Images/{recipe_image}.jpg'
-            im = Image.open(direct)
-            img = np.array(im)
-            st.image(img)
+            # no_1 = top_recipes[0][0]
+            # recipe_image = df.loc[no_1, 'Image_Name']
+            # direct = f'../raw_data/Food Images/{recipe_image}.jpg'
+            # im = Image.open(direct)
+            # img = np.array(im)
+            # st.image(img)
