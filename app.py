@@ -1,8 +1,6 @@
 import base64
 import streamlit as st
 import pandas as pd
-import numpy as np
-from PIL import Image
 from bokeh.models.widgets import Button
 from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
@@ -132,11 +130,3 @@ if result:
             st.title('Recipe Shortlist Details:')
             for recipe in top_recipes:
                 print_details(df, output, recipe)
-
-            #display no.1 image -> Check that the directory is correct
-            # no_1 = top_recipes[0][0]
-            # recipe_image = df.loc[no_1, 'Image_Name']
-            # direct = f'../raw_data/Food Images/{recipe_image}.jpg'
-            # im = Image.open(direct)
-            # img = np.array(im)
-            # st.image(img)

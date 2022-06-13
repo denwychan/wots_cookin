@@ -1,4 +1,7 @@
 import streamlit as st
+from PIL import Image
+import numpy as np
+from zipfile import ZipFile
 
 def print_details(df, speech_transcript, index):
     '''
@@ -12,9 +15,19 @@ def print_details(df, speech_transcript, index):
     title = df.loc[index, 'Title']
     ingredients = df.loc[index, 'Cleaned_Ingredients']
     instructions = df.loc[index, 'Instructions']
+    recipe_image = df.loc[index, 'Image_Name']
 
-    #print title, ingredients list and instructions on streamlit
+    #print title
     st.header(title)
+
+    #Display the picture for that recipe
+    zip = ZipFile('raw_data/Food Images.zip', 'r')
+    ifile = zip.open(f"Food Images/{recipe_image}.jpg")
+    im = Image.open(ifile)
+    img = np.array(im)
+    st.image(img)
+
+    #Display the ingredients and instructions
     st.subheader('Ingredients:')
 
     speech_transcript = speech_transcript.lower().split(' ')
@@ -23,6 +36,7 @@ def print_details(df, speech_transcript, index):
 
     st.subheader('Instructions:')
     st.write(instructions)
+
 
 def check_missing_ingredients(ingredient, speech_transcript):
     '''
