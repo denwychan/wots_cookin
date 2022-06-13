@@ -6,9 +6,10 @@ from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
 from pydub import AudioSegment
 from google.cloud import storage
-from google_api import speech_to_text, config
+from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
-from search import shortlist_recipes
+from wots_cookin.search import shortlist_recipes
+from wots_cookin.word2vec_trainer import Trainer
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -91,7 +92,7 @@ if result:
             decoded = base64.b64decode(b64_str)
 
             #save it server side
-            uploaded_file = '../audio_files/test.flac'
+            uploaded_file = 'audio_files/test.flac'
             with open(uploaded_file,'wb') as f:
                 f.write(decoded)
 
@@ -106,9 +107,10 @@ if result:
             output = speech_to_text(config, audio)
 
             st.write(f'Recording: {output}')
+            print(output)
 
             #loading clean dataframe of recipes
-            df = pd.read_pickle("../raw_data/enriched_recipes.pkl")
+            df = pd.read_pickle("raw_data/enriched_recipes.pkl")
             df.drop(columns = ['index'], inplace = True)
 
             #filtering recipe list for dietary requirements
