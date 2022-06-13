@@ -72,6 +72,9 @@ dietary_requirements = st.sidebar.multiselect(
      'No eggs', 'Dairy free', 'No Soy' ]
      )
 
+#minimum number of ingredients selection
+min_number_ingredients = st.sidebar.selectbox('Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
+
 if result:
     if "GET_AUDIO_BASE64" in result:
         st.write("Audio recording completed")
@@ -111,6 +114,11 @@ if result:
             #filtering recipe list for dietary requirements
             if len(dietary_requirements) > 0:
                 df = df[df[dietary_requirements].max(axis=1) == 0]
+
+            #filter recipe list for minimum number of ingredients
+            if min_number_ingredients > 0:
+                df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
+                df = df[df['Ingredients_Length']>=min_number_ingredients]
 
             #using search function to find no.1 matching recipe
             top_recipes = shortlist_recipes(df, output, df.index)
