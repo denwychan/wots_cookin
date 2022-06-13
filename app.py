@@ -8,8 +8,10 @@ from pydub import AudioSegment
 from google.cloud import storage
 from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
+from wots_cookin.data import load_full_stopwords
 from wots_cookin.search import shortlist_recipes
 from wots_cookin.word2vec_trainer import Trainer
+from wots_cookin.shortlist import *
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -56,6 +58,21 @@ if (button.textContent == "Record") {
 }
 """))
 
+# Load clean dataframe of recipes
+df = pd.read_pickle("raw_data/enriched_recipes.pkl")
+df.drop(columns = ['index'], inplace = True)
+print(df.shape)
+print(df.head(1))
+print(df.tail(1))
+
+# Load stopword for preprocessing recording transcript
+stopwords = load_full_stopwords()
+
+# Load pretrained model
+model = Word2Vec.load("ref_data/word2vec.model")
+print(model)
+print(model.wv.__dict__.keys())
+print(model.wv.__dict__['index_to_key'][:10])
 
 #code to extract audio results from JS to python
 result = streamlit_bokeh_events(
@@ -104,14 +121,21 @@ if result:
             with open(uploaded_file, "rb") as audio_file:
                 content = audio_file.read()
             audio = speech.RecognitionAudio(content=content)
-            output = speech_to_text(config, audio)
+            transcript = speech_to_text(config, audio)
 
-            st.write(f'Recording: {output}')
-            print(output)
+            st.write(f'Recording: {transcript}')
+            print(transcript)
 
-            #loading clean dataframe of recipes
-            df = pd.read_pickle("raw_data/enriched_recipes.pkl")
-            df.drop(columns = ['index'], inplace = True)
+            # Preprocess transcript into ingredients list
+            ingredients = transcript.split()
+            #remove stopwords
+
+            # Vectorise the ingredients list form the transcript
+            ing_vector = get_ingredients_vector(model, ingredients)
+
+            # Get shortlist recipes from model
+            shortlist = get_similar_recipes(ing_vector, df['Vector_List'], df)
+            print(shortlist.shape)
 
             #filtering recipe list for dietary requirements
             if len(dietary_requirements) > 0:
@@ -123,7 +147,7 @@ if result:
                 df = df[df['Ingredients_Length']>=min_number_ingredients]
 
             #using search function to find no.1 matching recipe
-            top_recipes = shortlist_recipes(df, output, df.index)
+            top_recipes = shortlist_recipes(df, transcript, df.index)
             no_1 = top_recipes[0][0]
             title = df.loc[no_1, 'Title']
             ingredients = df.loc[no_1, 'Cleaned_Ingredients']
