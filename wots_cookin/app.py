@@ -65,6 +65,13 @@ result = streamlit_bokeh_events(
     override_height=75,
     debounce_time=0)
 
+#dietary side-bar checklist
+dietary_requirements = st.sidebar.multiselect(
+    'What are your dietary requirements?',
+    ['Vegetarian', 'Vegan', 'Gluten Free', 'Nut Free','No Shellfish',
+     'No eggs', 'Dairy free', 'No Soy' ]
+     )
+
 if result:
     if "GET_AUDIO_BASE64" in result:
         st.write("Audio recording completed")
@@ -100,6 +107,10 @@ if result:
             #loading clean dataframe of recipes
             df = pd.read_pickle("../raw_data/enriched_recipes.pkl")
             df.drop(columns = ['index'], inplace = True)
+
+            #filtering recipe list for dietary requirements
+            if len(dietary_requirements) > 0:
+                df = df[df[dietary_requirements].max(axis=1) == 0]
 
             #using search function to find no.1 matching recipe
             top_recipes = shortlist_recipes(df, output, df.index)
