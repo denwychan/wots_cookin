@@ -1,5 +1,6 @@
 import base64
 import streamlit as st
+import pandas as pd
 from bokeh.models.widgets import Button
 from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
@@ -7,9 +8,7 @@ from pydub import AudioSegment
 from google.cloud import storage
 from google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
-from data import load_clean_data
-
-# from search import shortlist_recipes
+from search import shortlist_recipes
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -99,18 +98,18 @@ if result:
             st.write(f'Recording: {output}')
 
             #loading clean dataframe of recipes
-
-            # df = load_clean_data(additional=True)
+            df = pd.read_pickle("../raw_data/enriched_recipes.pkl")
+            df.drop(columns = ['index'], inplace = True)
 
             #using search function to find no.1 matching recipe
-            # top_recipes = shortlist_recipes(df, output, df.index)
-            # no_1 = top_recipes[0][0]
-            # title = df.loc[no_1, 'Title']
-            # ingredients = df.loc[no_1, 'Cleaned_Ingredients']
-            # instructions = df.loc[no_1, 'Instructions']
+            top_recipes = shortlist_recipes(df, output, df.index)
+            no_1 = top_recipes[0][0]
+            title = df.loc[no_1, 'Title']
+            ingredients = df.loc[no_1, 'Cleaned_Ingredients']
+            instructions = df.loc[no_1, 'Instructions']
 
             #printing no.1 recipe (title, ingredients and instructions)
-            # st.write(f'{title}')
-            # st.write(f'Ingredients: {ingredients}')
-            # st.write('Instructions')
-            # st.write(f'{instructions}')
+            st.write(f'{title}')
+            st.write(f'Ingredients: {ingredients}')
+            st.write('Instructions')
+            st.write(f'{instructions}')

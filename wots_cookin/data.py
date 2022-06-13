@@ -1,7 +1,7 @@
 import pandas as pd
 import string
 from nltk.tokenize import word_tokenize
-from dietary_req import dietary_tagging
+from wots_cookin.dietary_req import dietary_tagging
 
 def load_data(nrows = None):
     """Method to get data from the recipes csv
@@ -72,8 +72,8 @@ def filter_ingredient_count(df, limit):
     """
     Removes recipes from the dataframe that contain less ingredients than the filter
     """
-    df['length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
-    df = df[df['length']>=limit]
+    df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
+    df = df[df['Ingredients_Length']>=limit]
     df.reset_index(inplace=True)
     return df
 
@@ -82,12 +82,7 @@ def basic_clean(sentence):
     Function to convert list in string format to list
     """
     sentence = sentence[2:-2]
-    if "', '" in sentence:
-        sentence = sentence.split("', '")
-    else:
-        sentence = sentence.replace('\n', '')
-        sentence = sentence.split()
-        sentence = [float(vector) for vector in sentence]
+    sentence = sentence.split("', '")
     return sentence
 
 def load_clean_data(limit = 0, nrows = None):

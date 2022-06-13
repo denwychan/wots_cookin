@@ -97,7 +97,7 @@ class Doc2VecTrainer():
         print("Model trained!")
         return self
 
-def model_tocsv(vector_size=50
+def model_topickle(vector_size=50
                 ,min_count=5):
     # Train Word2Vec model to enrich recipes bank
     df = load_clean_data()
@@ -107,5 +107,5 @@ def model_tocsv(vector_size=50
     model = Doc2VecTrainer()
     model.train_model(boi, vector_size, min_count)
     df['Vector_List'] = model.recipes_vector_list
-    df.to_csv("enriched_recipes.csv", index=False)
+    df.to_pickle("../raw_data/enriched_recipes.pkl")
     print('Recipes with vectors created!')
