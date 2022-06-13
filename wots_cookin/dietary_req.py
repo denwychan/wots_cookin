@@ -13,8 +13,9 @@ def dietary_tagging(df):
             'Gluten free': {'flour', 'wheat', 'pasta', 'noodle', 'bread', 'crust'},
             'No soy': {'soy', 'tofu', 'soya'},
             'Vegetarian': {'beef','pork','lamb','steak','chicken','fish','tuna','cod','salmon',
-                           'duck','meat','ham','anchovies','snapper'},
-            'Vegan': {'honey'} 
+                           'duck','meat','ham','anchovies','snapper', 'bacon', 'turkey',
+                           'sausage'},
+            'Vegan': {'honey'}
     }
 
     def dietary_tags(row, types):
