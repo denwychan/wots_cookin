@@ -30,7 +30,7 @@ def load_data(nrows = None):
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    full_stopwords = list(pd.read_csv("../notebooks/full_stopwords.csv")['0'])
+    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")['0'])
     print(f'Returning list of {len(full_stopwords)} stopwords')
     return full_stopwords
 

@@ -10,7 +10,7 @@ def speech_to_text(config, audio):
         return result.alternatives[0].transcript
 
 #downloading list of ingredients with count and splitting by popularity for model optimizing
-df = pd.read_csv('../notebooks/ingredients_list.csv')
+df = pd.read_csv('ref_data/ingredients_list.csv')
 top_list = list(df.iloc[0:1000, 1])
 mid_list = list(df.iloc[1000:2000, 1])
 bottom_list = list(df.iloc[2000:, 1])
