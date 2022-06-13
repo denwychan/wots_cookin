@@ -6,4 +6,4 @@ raw_data/
 **/__pycache__/
 .env
 test_code/
-#audio_files/*.flac
+audio_files/*.flac
