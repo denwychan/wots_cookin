@@ -8,7 +8,7 @@ def shortlist_recipes(df, speech_transcript, index_refs):
     stemmer = PorterStemmer()
 
     #converting transcript to list and stemming
-    speech_transcript = speech_transcript.split(' ')
+    speech_transcript = speech_transcript.lower().split(' ')
     speech_transcript = [stemmer.stem(word) for word in speech_transcript]
 
     # iterate through each recipe to get match score
