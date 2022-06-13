@@ -10,6 +10,9 @@ from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
 from wots_cookin.search import shortlist_recipes
 from wots_cookin.word2vec_trainer import Trainer
+from PIL import Image
+import numpy as np
+
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -128,9 +131,17 @@ if result:
             title = df.loc[no_1, 'Title']
             ingredients = df.loc[no_1, 'Cleaned_Ingredients']
             instructions = df.loc[no_1, 'Instructions']
+            recipe_image = df.loc[no_1, 'Image_Name']
 
             #printing no.1 recipe (title, ingredients and instructions)
             st.write(f'{title}')
             st.write(f'Ingredients: {ingredients}')
             st.write('Instructions')
             st.write(f'{instructions}')
+
+
+            #display no.1 image -> Check that the directory is correct
+            direct = f'../raw_data/Food Images/{recipe_image}.jpg'
+            im = Image.open(direct)
+            img = np.array(im)
+            st.image(img)
