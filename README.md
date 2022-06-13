@@ -64,8 +64,9 @@ cd wots_cookin
 pip install -r requirements.txt
 make clean install test                # install and test
 ```
-Install ffmpeg using preferred package manager of choice (e.g. brew)
-Enable Google Speech-to-Text API on GCP
+Additional installation steps:
+- Install ffmpeg using preferred package manager of choice (e.g. brew)
+- Enable Google Speech-to-Text API on GCP
 
 Functionnal test with a script:
 
