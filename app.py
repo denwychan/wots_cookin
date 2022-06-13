@@ -8,7 +8,7 @@ from pydub import AudioSegment
 from google.cloud import storage
 from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
-from wots_cookin.data import load_full_stopwords
+from wots_cookin.data import load_full_stopwords, remove_stopwords_from_list
 from wots_cookin.search import shortlist_recipes
 from wots_cookin.word2vec_trainer import Trainer
 from wots_cookin.shortlist import *
@@ -86,12 +86,13 @@ result = streamlit_bokeh_events(
 #dietary side-bar checklist
 dietary_requirements = st.sidebar.multiselect(
     'What are your dietary requirements?',
-    ['Vegetarian', 'Vegan', 'Gluten Free', 'Nut Free','No Shellfish',
-     'No eggs', 'Dairy free', 'No Soy' ]
+    ['Vegetarian', 'Vegan', 'Gluten free', 'Nut free','No shellfish',
+     'No eggs', 'Dairy free', 'No soy' ]
      )
 
 #minimum number of ingredients selection
-min_number_ingredients = st.sidebar.selectbox('Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
+min_number_ingredients = st.sidebar.selectbox(
+    'Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
 
 if result:
     if "GET_AUDIO_BASE64" in result:
@@ -128,10 +129,12 @@ if result:
 
             # Preprocess transcript into ingredients list
             ingredients = transcript.split()
-            #remove stopwords
+            ingredients = remove_stopwords_from_list(ingredients, stopwords)
+            print(ingredients)
 
             # Vectorise the ingredients list form the transcript
             ing_vector = get_ingredients_vector(model, ingredients)
+            print(ing_vector)
 
             # Get shortlist recipes from model
             shortlist = get_similar_recipes(ing_vector, df['Vector_List'], df)
