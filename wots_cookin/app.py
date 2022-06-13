@@ -9,6 +9,7 @@ from google.cloud import storage
 from google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
 from search import shortlist_recipes
+from display import print_details
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -73,11 +74,12 @@ dietary_requirements = st.sidebar.multiselect(
      )
 
 #minimum number of ingredients selection
-min_number_ingredients = st.sidebar.selectbox('Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
+min_number_ingredients = st.sidebar.selectbox('Minimum number of ingredients (default 5)',
+                                              [1,2,3,4,5,6,7,8,9,10])
 
 if result:
     if "GET_AUDIO_BASE64" in result:
-        st.write("Audio recording completed")
+        st.write("Audio recording completed 🤩")
         b64_str_metadata = result.get("GET_AUDIO_BASE64")
         metadata_string = "data:audio/wav;base64,"
         if len(b64_str_metadata)>len(metadata_string):
@@ -120,15 +122,11 @@ if result:
                 df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
                 df = df[df['Ingredients_Length']>=min_number_ingredients]
 
-            #using search function to find no.1 matching recipe
+            #using search function to find top 5 matching recipes
             top_recipes = shortlist_recipes(df, output, df.index)
-            no_1 = top_recipes[0][0]
-            title = df.loc[no_1, 'Title']
-            ingredients = df.loc[no_1, 'Cleaned_Ingredients']
-            instructions = df.loc[no_1, 'Instructions']
 
-            #printing no.1 recipe (title, ingredients and instructions)
-            st.write(f'{title}')
-            st.write(f'Ingredients: {ingredients}')
-            st.write('Instructions')
-            st.write(f'{instructions}')
+            #print list of recipes including ingredients (flagging missing ingredients)
+            #and instructions
+            st.title('Recipe Shortlist Details:')
+            for recipe in top_recipes:
+                print_details(df, output, recipe)
