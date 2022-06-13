@@ -46,7 +46,7 @@ wots_cookin-run
 
 # Install
 
-Go to `https://github.com/{group}/wots_cookin` to see the project, manage issues,
+Go to `https://github.com/denwychan/wots_cookin` to see the project, manage issues,
 setup you ssh public key, ...
 
 Create a python3 virtualenv and activate it:
@@ -59,11 +59,14 @@ deactivate; virtualenv -ppython3 ~/venv ; source ~/venv/bin/activate
 Clone the project and install it:
 
 ```bash
-git clone git@github.com:{group}/wots_cookin.git
+git clone git@github.com:denwychan/wots_cookin.git
 cd wots_cookin
 pip install -r requirements.txt
 make clean install test                # install and test
 ```
+Install ffmpeg using preferred package manager of choice (e.g. brew)
+Enable Google Speech-to-Text API on GCP
+
 Functionnal test with a script:
 
 ```bash
