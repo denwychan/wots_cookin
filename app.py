@@ -5,11 +5,11 @@ from bokeh.models.widgets import Button
 from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
 from pydub import AudioSegment
-from google.cloud import speech_v1 as speech
 from wots_cookin.google_api import speech_to_text, config
-from wots_cookin.search import shortlist_recipes
+from google.cloud import speech_v1 as speech
+from wots_cookin.data import load_full_stopwords, remove_stopwords_from_list
 from wots_cookin.word2vec_trainer import Trainer
-from wots_cookin.search import shortlist_recipes
+from wots_cookin.shortlist import *
 from wots_cookin.display import print_details
 
 #audio record button
@@ -57,6 +57,21 @@ if (button.textContent == "Record") {
 }
 """))
 
+# Load clean dataframe of recipes
+df = pd.read_pickle("raw_data/enriched_recipes.pkl")
+df.drop(columns = ['index'], inplace = True)
+print(df.shape)
+print(df.head(1))
+print(df.tail(1))
+
+# Load stopword for preprocessing recording transcript
+stopwords = load_full_stopwords()
+
+# Load pretrained model
+model = Word2Vec.load("ref_data/word2vec.model")
+print(model)
+print(model.wv.__dict__.keys())
+print(model.wv.__dict__['index_to_key'][:10])
 
 #code to extract audio results from JS to python
 result = streamlit_bokeh_events(
@@ -70,12 +85,13 @@ result = streamlit_bokeh_events(
 #dietary side-bar checklist
 dietary_requirements = st.sidebar.multiselect(
     'What are your dietary requirements?',
-    ['Vegetarian', 'Vegan', 'Gluten Free', 'Nut Free','No Shellfish',
-     'No eggs', 'Dairy free', 'No Soy' ]
+    ['Vegetarian', 'Vegan', 'Gluten free', 'Nut free','No shellfish',
+     'No eggs', 'Dairy free', 'No soy' ]
      )
 
 #minimum number of ingredients selection
-min_number_ingredients = st.sidebar.selectbox('Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
+min_number_ingredients = st.sidebar.selectbox(
+    'Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
 
 if result:
     if "GET_AUDIO_BASE64" in result:
@@ -105,28 +121,44 @@ if result:
             with open(uploaded_file, "rb") as audio_file:
                 content = audio_file.read()
             audio = speech.RecognitionAudio(content=content)
-            output = speech_to_text(config, audio)
+            transcript = speech_to_text(config, audio)
 
-            st.write(f'Recording: {output}')
+            st.write(f'Recording: {transcript}')
+            print(transcript)
 
-            #loading clean dataframe of recipes
-            df = pd.read_pickle("raw_data/enriched_recipes.pkl")
-            df.drop(columns = ['index'], inplace = True)
-
-            #filtering recipe list for dietary requirements
+            #Filter dietary requirements
             if len(dietary_requirements) > 0:
                 df = df[df[dietary_requirements].max(axis=1) == 0]
+                print('Error?')
+                print(df.head(5))
 
             #filter recipe list for minimum number of ingredients
             if min_number_ingredients > 0:
                 df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
                 df = df[df['Ingredients_Length']>=min_number_ingredients]
+                print('Error?')
+                print(df.head(5))
+
+            # Preprocess transcript into ingredients list
+            ingredients = transcript.split()
+            ingredients = remove_stopwords_from_list(ingredients, stopwords)
+            print(ingredients)
+
+            # Vectorise the ingredients list form the transcript
+            ing_vector = get_ingredients_vector(model, ingredients)
+            print(ing_vector)
+
+            # Get shortlist recipes from model
+            print(df.head(5))
+            shortlist = get_similar_recipes(ing_vector, df['Vector_List'], df)
+            print(shortlist.shape)
 
             #using search function to find no.1 matching recipe
-            top_recipes = shortlist_recipes(df, output, df.index)
+            top_recipes = shortlist_recipes(df, transcript, df.index)
 
             #print list of recipes including ingredients (flagging missing ingredients)
             #and instructions
             st.title('Recipe Shortlist Details:')
             for recipe in top_recipes:
-                print_details(df, output, recipe)
+                print_details(df, transcript, recipe)
+

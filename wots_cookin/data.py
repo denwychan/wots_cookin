@@ -9,7 +9,7 @@ def load_data(nrows = None):
     Returns a pandas dataframe with empty or NA values automatically removed
     """
     # Load the raw csv file
-    file = "../raw_data/recipes.csv"
+    file = "raw_data/recipes.csv"
     df = pd.read_csv(file, nrows=nrows)
     df_len = df.shape[0]
     # Drop any NAs
@@ -25,14 +25,6 @@ def load_data(nrows = None):
     df.reset_index(drop=True, inplace = True)
     print('Data loaded.')
     return df
-
-
-def load_full_stopwords():
-    """Load the custom stopwords and return a list
-    """
-    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")['0'])
-    print(f'Returning list of {len(full_stopwords)} stopwords')
-    return full_stopwords
 
 def remove_formatting(ingredient_list):
     """
@@ -51,20 +43,34 @@ def remove_formatting(ingredient_list):
         ingredient_list[i] = ingredient_list[i].replace('  ', ' ')
     return ' '. join(ingredient_list)
 
+def load_full_stopwords():
+    """Load the custom stopwords and return a list
+    """
+    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")['0'])
+    print(f'Returning list of {len(full_stopwords)} stopwords')
+    return full_stopwords
+
+def remove_stopwords_from_list(ingredients_list, stopwords):
+    ingredients = [w.lower() for w in ingredients_list
+                   if not w.lower() in stopwords]
+    return ingredients
+
 def remove_stopwords(ingredient_list):
     """
     Function to remove regular and custom stopwords
     Takes a panda series and returns a list
     """
     # Loading full stopwords list from regular and custom stopwords
-    full_stopwords = load_full_stopwords()
+    stopwords = load_full_stopwords()
 
     # Removing the stopwords to get bag of ingredients
     print('Removing stopwords...')
     for i in range(0, len(ingredient_list)):
         ingredient_list[i] = ingredient_list[i].lower()
         word_tokens = word_tokenize(ingredient_list[i])
-        ingredient_list[i] = [w for w in word_tokens if not w in full_stopwords]
+        # ingredient_list[i] = [w for w in word_tokens if not w in full_stopwords]
+        # Uncomment above if line below doesn't work
+        ingredient_list[i] = remove_stopwords_from_list(word_tokens, stopwords)
     print("Order's up!")
     return ingredient_list
 
