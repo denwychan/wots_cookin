@@ -14,12 +14,13 @@ def load_data(nrows = None):
     df_len = df.shape[0]
     # Drop any NAs
     df.dropna(inplace = True)
-    # Calculating the length of 'Cleaned_Ingredients' columns to identify any empty ingredients column and then dropping them
+    # Calculating the length of 'Cleaned_Ingredients' columns to
+    # identify any empty ingredients column and then dropping them
     print(f'{df_len - df.shape[0]} rows containing NAs dropped...')
     df_len = df.shape[0]
     df['clean_len'] = [len(i) for i in df["Cleaned_Ingredients"]]
     df.drop(df[df['clean_len']<5].index, axis = 0, inplace= True)
-    print(f'{df_len - df.shape[0]} rows containing empty ingredients dropped...')
+    print(f'{df_len - df.shape[0]} rows containing empty ingredients dropped')
     # Drop unnecessary columns
     df.drop(columns =['Unnamed: 0', 'clean_len'], inplace = True)
     df.reset_index(drop=True, inplace = True)
@@ -34,11 +35,13 @@ def remove_formatting(ingredient_list):
     punctuation = string.punctuation
     # break string into list of individual items
     ingredient_list = ingredient_list.split("', \'")
-    # iterate through each item in list to remove punctuation and non alpha characters
+    # iterate through each item in list to remove punctuation and non alpha
+    # characters
     for i in range(len(ingredient_list)):
         for punc in punctuation:
             ingredient_list[i] = ingredient_list[i].replace(punc, '')
-        ingredient_list[i] = ''.join(char for char in ingredient_list[i] if char.isalpha() or char == ' ')
+        ingredient_list[i] = ''.join(char for char in ingredient_list[i]
+                                     if char.isalpha() or char == ' ')
         ingredient_list[i] = ingredient_list[i].strip()
         ingredient_list[i] = ingredient_list[i].replace('  ', ' ')
     return ' '. join(ingredient_list)
@@ -46,7 +49,8 @@ def remove_formatting(ingredient_list):
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")['stopwords'])
+    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")
+                          ['stopwords'])
     print(f'Returning list of {len(full_stopwords)} stopwords')
     return full_stopwords
 
@@ -68,15 +72,14 @@ def remove_stopwords(ingredient_list):
     for i in range(0, len(ingredient_list)):
         ingredient_list[i] = ingredient_list[i].lower()
         word_tokens = word_tokenize(ingredient_list[i])
-        # ingredient_list[i] = [w for w in word_tokens if not w in full_stopwords]
-        # Uncomment above if line below doesn't work
         ingredient_list[i] = remove_stopwords_from_list(word_tokens, stopwords)
     print("Order's up!")
     return ingredient_list
 
 def filter_ingredient_count(df, limit):
     """
-    Removes recipes from the dataframe that contain less ingredients than the filter
+    Removes recipes from the dataframe that contain less ingredients than
+    the filter
     """
     df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
     df = df[df['Ingredients_Length']>=limit]
