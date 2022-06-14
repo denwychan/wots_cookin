@@ -90,7 +90,7 @@ dietary_requirements = st.sidebar.multiselect(
      )
 
 #minimum number of ingredients selection
-min_number_ingredients = st.sidebar.selectbox(
+min_num_ingredients = st.sidebar.selectbox(
     'Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
 
 if result:
@@ -127,17 +127,14 @@ if result:
             print(transcript)
 
             #Filter dietary requirements
-            if len(dietary_requirements) > 0:
-                df = df[df[dietary_requirements].max(axis=1) == 0]
-                print('Error?')
-                print(df.head(5))
+            shortlist_df = filter_diet_req(dietary_requirements, df)
+            print(df.head(5))
+            print(df.tail(5))
 
             #filter recipe list for minimum number of ingredients
-            if min_number_ingredients > 0:
-                df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
-                df = df[df['Ingredients_Length']>=min_number_ingredients]
-                print('Error?')
-                print(df.head(5))
+            shortlist_df = filter_min_ingredients(min_num_ingredients, shortlist_df)
+            print(df.head(5))
+            print(df.tail(5))
 
             # Preprocess transcript into ingredients list
             ingredients = transcript.split()
@@ -150,15 +147,14 @@ if result:
 
             # Get shortlist recipes from model
             print(df.head(5))
-            shortlist = get_similar_recipes(ing_vector, df['Vector_List'], df)
-            print(shortlist.shape)
+            shortlist_df = get_similar_recipes(ing_vector, shortlist_df['Vector_List'], shortlist_df)
+            print(shortlist_df.shape)
 
             #using search function to find no.1 matching recipe
-            top_recipes = shortlist_recipes(df, transcript, df.index)
+            top_recipes = shortlist_recipes(shortlist_df, transcript, shortlist_df.index)
 
             #print list of recipes including ingredients (flagging missing ingredients)
             #and instructions
             st.title('Recipe Shortlist Details:')
             for recipe in top_recipes:
-                print_details(df, transcript, recipe)
-
+                print_details(shortlist_df, transcript, recipe)
