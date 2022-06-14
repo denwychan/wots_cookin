@@ -117,4 +117,5 @@ def shortlist_recipes(df, transcript, shortlist_len=5):
     df['Ingredients_Available'] = ing_available_list
     df = df[df['Match_Score']>0].copy()
     df.sort_values(by = 'Match_Score', ascending=False, inplace=True)
+    df.reset_index(drop=True, inplace=True)
     return df.head(shortlist_len)
