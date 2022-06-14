@@ -68,9 +68,34 @@ def get_similar_recipes(ingredients_vector, recipes_vector_list, df, nrow=100):
         results.append(df.iloc[i,:])
     return pd.DataFrame(results)
 
+def filter_diet_req(dietary_requirements, df):
+    """
+    Takes a list of dietary requirements, a pandas dataframe and
+    returns the a dataframe of recipes with the allergens removed
+    """
+    if len(dietary_requirements) > 0:
+        shortlist_df = df[df[dietary_requirements].max(axis=1) == 0]
+        shortlist_df.reset_index(drop=True, inplace=True)
+        return shortlist_df
+    else:
+        return df
+
+def filter_min_ingredients(min_num_ingredients, df):
+    """
+    Takes an integer of minimum number of ingredients, a pandas dataframe and
+    returns a dataframe of recipes with ingredients above the minimum specified
+    """
+    if min_num_ingredients > 0:
+        df['Ingredients_Length'] = \
+            df['Cleaned_Ingredients'].map(lambda x: len(x))
+        shortlist_df = df[df['Ingredients_Length']>=min_num_ingredients]
+        shortlist_df.reset_index(drop=True, inplace=True)
+        return shortlist_df
+    else:
+        return df
+
 def shortlist_recipes(df, speech_transcript, index_refs):
     """function that returns shortlist of index references"""
-
     score_ls = []
     stemmer = PorterStemmer()
 
