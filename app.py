@@ -5,13 +5,12 @@ from bokeh.models.widgets import Button
 from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
 from pydub import AudioSegment
-from google.cloud import storage
 from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
 from wots_cookin.data import load_full_stopwords, remove_stopwords_from_list
-from wots_cookin.search import shortlist_recipes
 from wots_cookin.word2vec_trainer import Trainer
 from wots_cookin.shortlist import *
+from wots_cookin.display import print_details
 
 #audio record button
 record_button  = Button(label="Record", width=100)
@@ -127,6 +126,19 @@ if result:
             st.write(f'Recording: {transcript}')
             print(transcript)
 
+            #Filter dietary requirements
+            if len(dietary_requirements) > 0:
+                df = df[df[dietary_requirements].max(axis=1) == 0]
+                print('Error?')
+                print(df.head(5))
+
+            #filter recipe list for minimum number of ingredients
+            if min_number_ingredients > 0:
+                df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
+                df = df[df['Ingredients_Length']>=min_number_ingredients]
+                print('Error?')
+                print(df.head(5))
+
             # Preprocess transcript into ingredients list
             ingredients = transcript.split()
             ingredients = remove_stopwords_from_list(ingredients, stopwords)
@@ -137,27 +149,15 @@ if result:
             print(ing_vector)
 
             # Get shortlist recipes from model
+            print(df.head(5))
             shortlist = get_similar_recipes(ing_vector, df['Vector_List'], df)
             print(shortlist.shape)
 
-            #filtering recipe list for dietary requirements
-            if len(dietary_requirements) > 0:
-                df = df[df[dietary_requirements].max(axis=1) == 0]
-
-            #filter recipe list for minimum number of ingredients
-            if min_number_ingredients > 0:
-                df['Ingredients_Length'] = df['Cleaned_Ingredients'].map(lambda x: len(x))
-                df = df[df['Ingredients_Length']>=min_number_ingredients]
-
             #using search function to find no.1 matching recipe
             top_recipes = shortlist_recipes(df, transcript, df.index)
-            no_1 = top_recipes[0][0]
-            title = df.loc[no_1, 'Title']
-            ingredients = df.loc[no_1, 'Cleaned_Ingredients']
-            instructions = df.loc[no_1, 'Instructions']
 
-            #printing no.1 recipe (title, ingredients and instructions)
-            st.write(f'{title}')
-            st.write(f'Ingredients: {ingredients}')
-            st.write('Instructions')
-            st.write(f'{instructions}')
+            #print list of recipes including ingredients (flagging missing ingredients)
+            #and instructions
+            st.title('Recipe Shortlist Details:')
+            for recipe in top_recipes:
+                print_details(df, transcript, recipe)
