@@ -1,34 +1,48 @@
 import streamlit as st
+from PIL import Image
+import numpy as np
+from zipfile import ZipFile
 
-def print_details(df, speech_transcript, index):
+def print_details(df, ingredients):
     '''
     Function which prints on streamlit a recipes title, list of ingredients and
     instructions
     '''
+    for i in df.index:
+        #extract recipe details from database
+        title = df['Title'][i]
+        ingredients = df['Cleaned_Ingredients'][i]
+        instructions = df['Instructions'][i]
+        recipe_image = df['Image_Name'][i]
 
-    index = index[0]
+        #print title
+        st.header(title)
 
-    #extract recipe details from database
-    title = df.loc[index, 'Title']
-    ingredients = df.loc[index, 'Cleaned_Ingredients']
-    instructions = df.loc[index, 'Instructions']
+        #Display the picture for that recipe
+        zip = ZipFile('raw_data/Food Images.zip', 'r')
+        ifile = zip.open(f"Food Images/{recipe_image}.jpg")
+        im = Image.open(ifile)
+        img = np.array(im)
+        st.image(img)
 
-    #print title, ingredients list and instructions on streamlit
-    st.header(title)
-    st.subheader('Ingredients:')
 
-    speech_transcript = speech_transcript.lower().split(' ')
-    for ingredient in ingredients:
-        check_missing_ingredients(ingredient, speech_transcript)
+        #Display the ingredients and instructions
+        st.subheader('Ingredients:')
 
-    st.subheader('Instructions:')
-    st.write(instructions)
+        for ingredient in ingredients:
+            check_missing_ingredients(ingredient, ingredients)
 
-def check_missing_ingredients(ingredient, speech_transcript):
+        st.subheader('Instructions:')
+        st.write(instructions)
+
+
+def check_missing_ingredients(ingredient, ingredients):
     '''
     Function that checks if ingredient is missing from speech transcript
     '''
 
+    # Ingredients in this list will not be flagged as missing in the frontend
+    # UI
     ignore_ingredients = ['salt', 'oil', 'sugar', 'water']
     ingredient = ingredient.lower()
     match = False
@@ -37,7 +51,7 @@ def check_missing_ingredients(ingredient, speech_transcript):
         if ignore_ingredient in ingredient:
             match = True
         else:
-            for word in speech_transcript:
+            for word in ingredients:
                 if word in ingredient:
                     match = True
 

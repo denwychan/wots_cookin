@@ -67,49 +67,6 @@ class Trainer():
         print(f"{len(self.recipes_vector_list)} recipes vectorized")
         return self
 
-    def get_similarity_score(self, ingredients):
-        """
-        Takes a list of ingredients and returns a numpy array of similar scores
-        relative to the recipes' bag of ingredients based on the cosine
-        similarity
-        """
-        # Cosine similarity score list
-        cos_sim = []
-        # Calculate the cosine similarity of the ingredients compared to each
-        # vectorized recipe stored in the model
-        for i in range(0,len(self.recipes_vector_list)):
-            if sum(self.recipes_vector_list[i]) == 0.0:
-                # Ignore recipes where there is no similarity
-                cos_sim.append(0)
-            else:
-                cos_sim.append(
-                    np.dot(
-                        self.get_ingredients_vector(ingredients)
-                        ,self.recipes_vector_list[i])
-                    /(norm(
-                        self.get_ingredients_vector(ingredients)
-                        )
-                      *norm(self.recipes_vector_list[i])))
-        # Returns the cosine similarity score as an numpy array
-        sim_score_list = np.array(cos_sim)
-        return sim_score_list
-
-    def get_similar_recipes(self,ingredients, df, nrow=100):
-        """
-        Takes a list of ingredients, a pandas dataframe, and the number of rows
-        and returns the recipes with the highest similarity score
-        Optional parameter:
-        nrows = number of matches returned. Defaults to 100
-        """
-        # Get the cosine similarity score
-        cos_sim = self.get_similarity_score(ingredients)
-        # Get the index for the most similar matches
-        index = (-cos_sim).argsort()[:nrow]
-        results = []
-        # Returns the results in a dataframe
-        for i in index:
-            results.append(df.iloc[i,:])
-        return pd.DataFrame(results)
 
     def train_model(self,bag_of_ingredients, vector_size=50, min_count=5):
         """
@@ -124,6 +81,8 @@ class Trainer():
         self.set_corpus(bag_of_ingredients)
         self.get_recipes_vectors(bag_of_ingredients)
         print("Model trained!")
+        self.model.save("../ref_data/word2vec.model")
+        print("Model saved!")
         return self
 
 def model_topickle(vector_size=50
