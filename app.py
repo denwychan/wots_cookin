@@ -155,6 +155,22 @@ if result:
             print(top_recipes_df.shape)
             print(top_recipes_df.head(1))
 
+            # Create slider to allow the user to select the number of results
+            # in the results dataframe
+            results_count = st.slider('Select number of results', 1, 15, 5)
+
+            # and used in order to select the displayed lines
+            top_recipes_df = top_recipes_df.head(results_count)
+
+            # Create slider to allow the user to select the number of results
+            # in the results dataframe
+            # results_count = st.slider('Select number of results', 1, 15, 5)
+
+            # # and used in order to select the displayed lines
+            # results_df = top_recipes_df.head(results_count)
+
+            # results_df
+
             #print list of recipes including ingredients (flagging missing ingredients)
             #and instructions
             st.title('Recipe Shortlist Details:')
