@@ -53,3 +53,10 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+# ----------------------------------
+#     UPDATE AND SAVE RECIPES DF
+# ----------------------------------
+
+create_df:
+	@python wots_cookin/word2vec_trainer.py
