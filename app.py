@@ -151,10 +151,11 @@ if result:
             print(shortlist_df.shape)
 
             #using search function to find no.1 matching recipe
-            top_recipes = shortlist_recipes(shortlist_df, transcript, shortlist_df.index)
+            top_recipes_df = shortlist_recipes(shortlist_df, ingredients)
+            print(top_recipes_df.shape)
+            print(top_recipes_df.head(1))
 
             #print list of recipes including ingredients (flagging missing ingredients)
             #and instructions
             st.title('Recipe Shortlist Details:')
-            for recipe in top_recipes:
-                print_details(shortlist_df, transcript, recipe)
+            print_details(top_recipes_df, ingredients)

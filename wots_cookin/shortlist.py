@@ -94,33 +94,27 @@ def filter_min_ingredients(min_num_ingredients, df):
     else:
         return df
 
-def shortlist_recipes(df, speech_transcript, index_refs):
+def shortlist_recipes(df, transcript, shortlist_len=5):
     """function that returns shortlist of index references"""
-    score_ls = []
-    stemmer = PorterStemmer()
+    score_list = []
+    ing_available_list =[]
 
-    #converting transcript to list and stemming
-    speech_transcript = speech_transcript.split(' ')
-    speech_transcript = [stemmer.stem(word) for word in speech_transcript]
+    # Iterate through each recipe to get match score
+    for i in df.index:
+        boi = df['Bag_Of_Ingredients'][i] # Bag of Ingredients (BoI)
+        # Calculate number of positive matches to BoI
+        boi_matches = [word for word in transcript if word in boi]
+        pos_matches = len(boi_matches)
 
-    # iterate through each recipe to get match score
-    for recipe in index_refs:
-
-            # extract bag of words for each recipe and stem
-            boi = df.loc[recipe, 'Bag_Of_Ingredients']
-            boi = [stemmer.stem(word) for word in boi]
-
-            # calculate number of matching BoI
-            positive_boi = [word for word in speech_transcript if word in boi]
-            score = len(positive_boi)
-
-            # calculate score relative to total ingredients required
-            score = score / len(df.loc[recipe, 'Cleaned_Ingredients'])
-            score_ls.append(score)
+        # Calculate score relative to total ingredients required
+        score = pos_matches / len(df['Cleaned_Ingredients'][i])
+        ing_available = f"{pos_matches} / {len(df['Cleaned_Ingredients'][i])}"
+        score_list.append(score)
+        ing_available_list.append(ing_available)
 
     # select top 5 matching indices
-    output = np.array([index_refs, score_ls]).T
-    output = output[output[:,1].argsort()]
-    output = np.flip(output[-5:,:1])
-
-    return output
+    df['Match_Score'] = score_list
+    df['Ingredients_Available'] = ing_available_list
+    df = df[df['Match_Score']>0].copy()
+    df.sort_values(by = 'Match_Score', ascending=False, inplace=True)
+    return df.head(shortlist_len)
