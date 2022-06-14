@@ -2,6 +2,7 @@ import pandas as pd
 import string
 from nltk.tokenize import word_tokenize
 from wots_cookin.dietary_req import dietary_tagging
+from wots_cookin.utils import get_path
 
 def load_data(nrows = None):
     """Method to get data from the recipes csv
@@ -9,7 +10,8 @@ def load_data(nrows = None):
     Returns a pandas dataframe with empty or NA values automatically removed
     """
     # Load the raw csv file
-    file = "../raw_data/recipes.csv"
+    recipe_path = "/wots_cookin/raw_data/recipes.csv"
+    file = get_path(recipe_path)
     df = pd.read_csv(file, nrows=nrows)
     df_len = df.shape[0]
     # Drop any NAs
@@ -30,7 +32,9 @@ def load_data(nrows = None):
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")['0'])
+    stopwords_path = "/wots_cookin/ref_data/full_stopwords.csv"
+    file = get_path(stopwords_path)
+    full_stopwords = list(pd.read_csv(file)['0'])
     print(f'Returning list of {len(full_stopwords)} stopwords')
     return full_stopwords
 

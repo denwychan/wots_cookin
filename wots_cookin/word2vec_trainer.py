@@ -4,6 +4,7 @@ from numpy import dot
 from numpy.linalg import norm
 import pandas as pd
 from wots_cookin.data import load_clean_data
+from wots_cookin.utils import get_path
 
 class Trainer():
     """
@@ -135,5 +136,11 @@ def model_topickle(vector_size=50
     model = Trainer()
     model.train_model(boi, vector_size, min_count)
     df['Vector_List'] = model.recipes_vector_list
-    df.to_pickle("../raw_data/enriched_recipes.pkl")
+    save_path = "/wots_cookin/ref_data/enriched_recipes.pkl"
+    file = get_path(save_path)
+    df.to_pickle(file)
     print('Recipes with vectors created!')
+    return df
+
+if __name__ == "__main__":
+    model_topickle()
