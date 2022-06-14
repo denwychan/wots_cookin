@@ -161,3 +161,4 @@ if result:
             st.title('Recipe Shortlist Details:')
             for recipe in top_recipes:
                 print_details(df, transcript, recipe)
+

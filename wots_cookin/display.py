@@ -27,6 +27,7 @@ def print_details(df, speech_transcript, index):
     # img = np.array(im)
     # st.image(img)
 
+
     #Display the ingredients and instructions
     st.subheader('Ingredients:')
 
