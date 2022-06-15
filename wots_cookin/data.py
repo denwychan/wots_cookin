@@ -12,7 +12,7 @@ def load_data(nrows = None):
     Returns a pandas dataframe with empty or NA values automatically removed
     """
     # Load the raw csv file
-    recipes_path = "/wots_cookin/raw_data/recipes.csv"
+    recipes_path = "/raw_data/recipes.csv"
     file = get_path(recipes_path)
     df = pd.read_csv(file, nrows=nrows)
     df_len = df.shape[0]
@@ -61,7 +61,7 @@ def remove_plurals(ingredient_list):
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    stopwords_path = "/wots_cookin/ref_data/full_stopwords.csv"
+    stopwords_path = "/ref_data/full_stopwords.csv"
     file = get_path(stopwords_path)
     full_stopwords = list(pd.read_csv(file)
                           ['stopwords'])
