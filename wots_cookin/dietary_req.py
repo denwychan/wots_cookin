@@ -5,17 +5,22 @@ def dietary_tagging(df):
 
     #dictionary containing tag words for dietary items
     dietary_req = {
-            'Dairy free': {'Cheese', 'Butter', 'Margarine', 'Yogurt', 'Cream', 'Ice cream'},
-            'No eggs': {'egg'},
-            'Nut free': {'Brazil nut', 'Almond', 'Cashew', 'Macadamia nut', 'Pistachio','Pine nut',
-                         'Walnut','peanut'},
-            'No shellfish': {'Shrimp','Prawn','Crayfish', 'Lobster', 'Squid', 'Scallops','clam'},
-            'Gluten free': {'flour', 'wheat', 'pasta', 'noodle', 'bread', 'crust'},
-            'No soy': {'soy', 'tofu', 'soya'},
-            'Vegetarian': {'beef','pork','lamb','steak','chicken','fish','tuna','cod','salmon',
-                           'duck','meat','ham','anchovies','snapper', 'bacon', 'turkey',
-                           'sausage'},
-            'Vegan': {'honey'}
+        'Dairy free': ['Cheese', 'Butter', 'Cream', 'Margarine', 'Yogurt', 'Cream', 'Ice cream', 'Roquefort',
+                'Camembert', 'Cotija', 'Chèvre', 'Feta', 'Mozzarella', 'Emmental', 'Cheddar' ,
+                'Gouda', 'Taleggio', 'Parmigiano-Reggiano', 'Manchego', 'Monterey'],
+        'No eggs': ['egg', 'mayonaise', 'Meringue'],
+        'Nut free': ['Brazil nut', 'Almond', 'Cashew', 'Macadamia nut', 'Pistachio','Pine nut',
+                'Walnut','peanut', 'coconut', 'hazelnut', 'pralines', 'pecans', 'nutella'],
+        'No shellfish': ['Shrimp','Prawn','Crayfish', 'Lobster', 'Squid', 'Scallop','clam', 'oysters', 'musscles'
+                'snail', 'octopus', 'urchin', 'cockles' ],
+        'Gluten free': ['flour', 'wheat', 'pasta', 'noodle', 'bread', 'crust', 'barley', 'matzo', 'matzo', 'semolina', 'farina' ],
+        'No soy': ['soy', 'tofu', 'soya', 'miso', 'tempeh', 'edamame', 'soy sauce'],
+        'Vegetarian': ['beef','pork','lamb','steak','chicken','fish','tuna','cod','salmon',
+                'duck','meat','ham','anchovies','snapper', 'bacon', 'turkey','salami',
+                'sausage', 'gelatine', 'Hot dog', 'jamon', 'prosciutto', 'anchovies',
+                'anchovy', 'mutton', 'turkey', 'venison', 'boar', 'bison', 'goose', 'rabbit', 'pheasant',
+                'ribs', 'veal','chorizo','hamburger'],
+        'Vegan': ['honey']
     }
 
     def dietary_tags(row, types):
