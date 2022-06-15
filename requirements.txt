@@ -7,8 +7,8 @@ wheel>=0.29
 # data science
 numpy
 pandas
-scikit-learn
 gensim
+nltk
 
 # tests/linter
 black
@@ -19,8 +19,6 @@ yapf
 
 # API
 gcsfs
-google-cloud-storage
-mlflow
 s3fs
 
 # utilities
@@ -35,4 +33,4 @@ streamlit
 bokeh
 streamlit_bokeh_events
 pydub
-google-cloud
+google-cloud-speech
