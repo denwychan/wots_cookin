@@ -20,11 +20,11 @@ def print_details(df, ingredients):
         st.header(title)
 
         #Display the picture for that recipe
-        # zip = ZipFile('raw_data/Food Images.zip', 'r')
-        # ifile = zip.open(f"Food Images/{recipe_image}.jpg")
-        # im = Image.open(ifile)
-        # img = np.array(im)
-        # st.image(img)
+        zip = ZipFile('raw_data/Food Images.zip', 'r')
+        ifile = zip.open(f"Food Images/{recipe_image}.jpg")
+        im = Image.open(ifile)
+        img = np.array(im)
+        st.image(img)
 
 
         #Display the ingredients and instructions
