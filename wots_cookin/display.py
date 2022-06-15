@@ -51,7 +51,6 @@ def check_missing_ingredients(ingredient, ingredients):
     '''
 
     #cleaning cleaned ingredient, changing to lower case and singularised version
-    ingredient = ingredient
     sing_ingredient = ' '.join(remove_plurals(ingredient.lower().split()))
 
     # cleaned ingredients that start with one of the ignore words will not be

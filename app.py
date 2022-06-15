@@ -13,7 +13,7 @@ from wots_cookin.shortlist import *
 from wots_cookin.display import print_details
 
 # Load clean dataframe of recipes
-df = pd.read_pickle("raw_data/enriched_recipes.pkl")
+df = pd.read_pickle("ref_data/enriched_recipes.pkl")
 df.drop(columns = ['index'], inplace = True)
 print(f'Loading dataframe of {df.shape}')
 
