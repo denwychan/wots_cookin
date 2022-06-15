@@ -3,6 +3,7 @@ from numpy.linalg import norm
 import pandas as pd
 from gensim.models import Word2Vec
 from nltk.stem.porter import PorterStemmer
+from wots_cookin.display import ignore_ingredients, ignore_words
 
 def get_ingredients_vector(model,ingredients):
     """
@@ -98,6 +99,7 @@ def shortlist_recipes(df, transcript, shortlist_len=5):
     """function that returns shortlist of index references"""
     score_list = []
     ing_available_list =[]
+    score_word_list = []
 
     # Iterate through each recipe to get match score
     for i in df.index:
@@ -106,13 +108,42 @@ def shortlist_recipes(df, transcript, shortlist_len=5):
         boi_matches = [word for word in transcript if word in boi]
         pos_matches = len(boi_matches)
 
+        #calculate length score adjusted for ignore words and assumed food items
+        cleaned_ingredients = df['Cleaned_Ingredients'][i]
+        length = 0
+
+        for cleaned_ingredient in cleaned_ingredients:
+            valid = True
+            for word in ignore_ingredients:
+                if word in cleaned_ingredient.lower():
+                    valid = False
+            if cleaned_ingredient.split()[0].lower() in ignore_words:
+                valid = False
+            if valid == True:
+                length += 1
+
         # Calculate score relative to total ingredients required
-        score = pos_matches / len(df['Cleaned_Ingredients'][i])
-        ing_available = f"{pos_matches} / {len(df['Cleaned_Ingredients'][i])}"
+        score = pos_matches / length
         score_list.append(score)
+        ing_available = f"{pos_matches} / {length}"
         ing_available_list.append(ing_available)
 
+        # Apply qualitative scoring
+        Top = 'Excellent'
+        Mid = 'Good'
+        Low = 'Not Good'
+        score_dict = {Top: 0.75, Mid: 0.5}
+
+        score_word = Low
+        if score >= score_dict[Top]:
+            score_word = Top
+        elif score >= score_dict[Mid]:
+            score_word = Mid
+
+        score_word_list.append(score_word)
+
     # select top 5 matching indices
+    df['Match'] = score_word_list
     df['Match_Score'] = score_list
     df['Ingredients_Available'] = ing_available_list
     df = df[df['Match_Score']>0].copy()

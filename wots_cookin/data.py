@@ -61,7 +61,7 @@ def remove_plurals(ingredient_list):
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    stopwords_path = "/ref_data/full_stopwords.csv"
+    stopwords_path = "/wots_cookin/ref_data/full_stopwords.csv"
     file = get_path(stopwords_path)
     full_stopwords = list(pd.read_csv(file)
                           ['stopwords'])
