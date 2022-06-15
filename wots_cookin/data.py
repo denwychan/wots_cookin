@@ -53,12 +53,10 @@ def remove_formatting(ingredient_list):
 def remove_plurals(ingredient_list):
     """
     Function to remove plurals
-    Takes a panda series and returns a list
+    Takes a list and returns a list
     """
-    ingredient_list = ingredient_list.apply(lambda x: ' '.join([inf.singularize(item) for item in x.split()]))
-    print(f'Singularizing words')
+    ingredient_list = [inf.singularize(item) for item in ingredient_list]
     return ingredient_list
-
 
 def load_full_stopwords():
     """Load the custom stopwords and return a list
@@ -118,8 +116,9 @@ def load_clean_data(limit = 0, nrows = None):
     df = load_data(nrows)
     print('Cleaning formatting...')
     df['Bag_Of_Ingredients'] = df['Cleaned_Ingredients'].map(remove_formatting)
-    df["Bag_Of_Ingredients"] = remove_plurals(df['Bag_Of_Ingredients'])
     df['Bag_Of_Ingredients'] = remove_stopwords(df['Bag_Of_Ingredients'])
+    df['Bag_Of_Ingredients'] = df['Bag_Of_Ingredients'].map(remove_plurals)
+    print('Bag of ingredients singularised')
     df['Cleaned_Ingredients'] = df['Cleaned_Ingredients'].map(basic_clean)
     df = filter_ingredient_count(df, limit)
     df = dietary_tagging(df)
