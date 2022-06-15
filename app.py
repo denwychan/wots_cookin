@@ -7,7 +7,7 @@ from streamlit_bokeh_events import streamlit_bokeh_events
 from pydub import AudioSegment
 from wots_cookin.google_api import speech_to_text, config
 from google.cloud import speech_v1 as speech
-from wots_cookin.data import load_full_stopwords, remove_stopwords_from_list
+from wots_cookin.data import load_full_stopwords, remove_stopwords_from_list, remove_plurals
 from wots_cookin.word2vec_trainer import Trainer
 from wots_cookin.shortlist import *
 from wots_cookin.display import print_details
@@ -130,9 +130,10 @@ def main():
                 print(f'Returning dataframe of {df.shape} after minimum number\
                     of ingredients filtering')
 
-                # Preprocess transcript into ingredients list
+                # Preprocess transcript into ingredients list and singularise
                 ingredients = transcript.split()
                 ingredients = remove_stopwords_from_list(ingredients, stopwords)
+                ingredients = remove_plurals(ingredients)
                 print(f'Searching {ingredients}...')
 
                 # Vectorise the ingredients list form the transcript
@@ -156,6 +157,7 @@ def main():
 
                 # Display top results interactive dataframe
                 st.dataframe(top_recipes_df[['Title'
+                                            , 'Match'
                                             , 'Match_Score'
                                             , 'Ingredients_Available']], 900)
 
