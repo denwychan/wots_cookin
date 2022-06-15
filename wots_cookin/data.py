@@ -2,6 +2,9 @@ import pandas as pd
 import string
 from nltk.tokenize import word_tokenize
 from wots_cookin.dietary_req import dietary_tagging
+import inflection as inf
+from wots_cookin.utils import get_path
+
 
 def load_data(nrows = None):
     """Method to get data from the recipes csv
@@ -9,7 +12,8 @@ def load_data(nrows = None):
     Returns a pandas dataframe with empty or NA values automatically removed
     """
     # Load the raw csv file
-    file = "raw_data/recipes.csv"
+    recipes_path = "/wots_cookin/raw_data/recipes.csv"
+    file = get_path(recipes_path)
     df = pd.read_csv(file, nrows=nrows)
     df_len = df.shape[0]
     # Drop any NAs
@@ -46,10 +50,22 @@ def remove_formatting(ingredient_list):
         ingredient_list[i] = ingredient_list[i].replace('  ', ' ')
     return ' '. join(ingredient_list)
 
+def remove_plurals(ingredient_list):
+    """
+    Function to remove plurals
+    Takes a panda series and returns a list
+    """
+    ingredient_list = ingredient_list.apply(lambda x: ' '.join([inf.singularize(item) for item in x.split()]))
+    print(f'Singularizing words')
+    return ingredient_list
+
+
 def load_full_stopwords():
     """Load the custom stopwords and return a list
     """
-    full_stopwords = list(pd.read_csv("ref_data/full_stopwords.csv")
+    stopwords_path = "/wots_cookin/ref_data/full_stopwords.csv"
+    file = get_path(stopwords_path)
+    full_stopwords = list(pd.read_csv(file)
                           ['stopwords'])
     print(f'Returning list of {len(full_stopwords)} stopwords')
     return full_stopwords
@@ -102,6 +118,7 @@ def load_clean_data(limit = 0, nrows = None):
     df = load_data(nrows)
     print('Cleaning formatting...')
     df['Bag_Of_Ingredients'] = df['Cleaned_Ingredients'].map(remove_formatting)
+    df["Bag_Of_Ingredients"] = remove_plurals(df['Bag_Of_Ingredients'])
     df['Bag_Of_Ingredients'] = remove_stopwords(df['Bag_Of_Ingredients'])
     df['Cleaned_Ingredients'] = df['Cleaned_Ingredients'].map(basic_clean)
     df = filter_ingredient_count(df, limit)
