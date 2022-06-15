@@ -15,27 +15,22 @@ from wots_cookin.display import print_details
 # Load clean dataframe of recipes
 df = pd.read_pickle("raw_data/enriched_recipes.pkl")
 df.drop(columns = ['index'], inplace = True)
-print(df.shape)
-print(df.head(1))
-print(df.tail(1))
+print(f'Loading dataframe of {df.shape}')
 
 # Load stopword for preprocessing recording transcript
 stopwords = load_full_stopwords()
 
 # Load pretrained model
 model = Word2Vec.load("ref_data/word2vec.model")
-print(model)
-print(model.wv.__dict__.keys())
-print(model.wv.__dict__['index_to_key'][:10])
+print(f'{model} model loaded')
 
+# Main function for running app
 def main():
     st.markdown("""## Hey there! What's in your fridge?""")
 
-    #audio record button
+    # Create audio record button
     record_button  = Button(label="Record", width=100)
-
-    #java script to run audio recording
-
+    # Custom javascript to run audio recording on clicking 'record' and 'stop'
     record_button.js_on_event("button_click", CustomJS(code="""
     //Get button from the DOM
     var button = document.getElementsByTagName('button')[0];
@@ -75,8 +70,7 @@ def main():
         button.textContent = "Record";
     }
     """))
-
-    #code to extract audio results from JS to python
+    # Convert audio transcript from javacript to python
     result = streamlit_bokeh_events(
         record_button,
         events="GET_AUDIO_BASE64",
@@ -85,85 +79,88 @@ def main():
         override_height=75,
         debounce_time=0)
 
-    #dietary side-bar checklist
+    # Create multiselect dietary side-bar checklist
     dietary_requirements = st.sidebar.multiselect(
         'What are your dietary requirements?',
         ['Vegetarian', 'Vegan', 'Gluten free', 'Nut free','No shellfish',
         'No eggs', 'Dairy free', 'No soy' ]
         )
 
-    #minimum number of ingredients selection
+    # Create single select box for choosing minimum number of ingredients
     min_num_ingredients = st.sidebar.selectbox(
         'Minimum number of ingredients', [1,2,3,4,5,6,7,8,9,10])
 
+    # Convert recording to file and send to Google speech-to-text API for
+    # transcript processing
     if result:
         if "GET_AUDIO_BASE64" in result:
             st.write("Audio recording completed")
             b64_str_metadata = result.get("GET_AUDIO_BASE64")
             metadata_string = "data:audio/wav;base64,"
             if len(b64_str_metadata)>len(metadata_string):
-                #get rid of metadata (data:audio/wav;base64,)
-
+                # Remove metadata (data:audio/wav;base64,)
                 if b64_str_metadata.startswith(metadata_string):
                     b64_str = b64_str_metadata[len(metadata_string):]
                 else:
                     b64_str = b64_str_metadata
 
                 decoded = base64.b64decode(b64_str)
-
-                #save it server side
+                # Save file to audio_files folder locally
                 uploaded_file = 'audio_files/test.flac'
                 with open(uploaded_file,'wb') as f:
                     f.write(decoded)
-
-                #convert File to flac and save it again
+                # Convert file to flac and save it again
                 flac = AudioSegment.from_file(uploaded_file)
                 getaudio = flac.export(uploaded_file, format="flac")
-
-                #convert audio to text with google API
+                # Convert audio to text with google speech-to-text API
                 with open(uploaded_file, "rb") as audio_file:
                     content = audio_file.read()
                 audio = speech.RecognitionAudio(content=content)
                 transcript = speech_to_text(config, audio)
-
                 st.write(f'Recording: {transcript}')
 
-                #Filter dietary requirements
+                # Filter dietary requirements
                 shortlist_df = filter_diet_req(dietary_requirements, df)
-                print(df.head(5))
+                print(f'Returning dataframe of {df.shape} after dietary\
+                    requirements filtering')
 
                 #filter recipe list for minimum number of ingredients
-                shortlist_df = filter_min_ingredients(min_num_ingredients, shortlist_df)
-                print(df.head(5))
+                shortlist_df = filter_min_ingredients(min_num_ingredients
+                                                      , shortlist_df)
+                print(f'Returning dataframe of {df.shape} after minimum number\
+                    of ingredients filtering')
 
                 # Preprocess transcript into ingredients list
                 ingredients = transcript.split()
                 ingredients = remove_stopwords_from_list(ingredients, stopwords)
-                print(ingredients)
+                print(f'Searching {ingredients}...')
 
                 # Vectorise the ingredients list form the transcript
                 ing_vector = get_ingredients_vector(model, ingredients)
-                print(ing_vector)
+                print('Ingredients vectorised')
 
                 # Get shortlist recipes from model
-                shortlist_df = get_similar_recipes(ing_vector, shortlist_df['Vector_List'], shortlist_df)
-                print(shortlist_df.shape)
+                shortlist_df = get_similar_recipes(ing_vector
+                                                   , shortlist_df['Vector_List']
+                                                   , shortlist_df)
+                print(f'Returning dataframe of {shortlist_df.shape}')
 
-                # Create slider to allow the user to select the number of results
-                # in the results dataframe
+                # Create slider to allow the user to select the number of
+                # results displayed in the summary table
                 results_count = st.slider('Select number of results', 1, 10, 5)
 
-                #using search function to find no.1 matching recipe
-                top_recipes_df = shortlist_recipes(shortlist_df, ingredients, shortlist_len=results_count)
-                print(top_recipes_df.shape)
+                # Shortlist the top results based on the match score
+                top_recipes_df = shortlist_recipes(shortlist_df, ingredients
+                                                , shortlist_len=results_count)
+                print(f'Returning top results of {top_recipes_df.shape}')
 
-                # and used in order to select the displayed lines
+                # Display top results interactive dataframe
                 st.dataframe(top_recipes_df[['Title'
                                             , 'Match_Score'
                                             , 'Ingredients_Available']], 900)
 
-                #print list of recipes including ingredients (flagging missing ingredients)
-                #and instructions
+                # Print full version of individual recipes with
+                # missing ingredients flagged
                 st.title('Recipe Details:')
                 print_details(top_recipes_df, ingredients)
 
