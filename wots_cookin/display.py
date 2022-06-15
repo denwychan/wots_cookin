@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 from zipfile import ZipFile
 from wots_cookin.data import remove_plurals
+from wots_cookin.utils import get_path
 
 def print_details(df, ingredients):
     '''
@@ -20,7 +21,9 @@ def print_details(df, ingredients):
         st.header(title)
 
         #Display the picture for that recipe
-        zip = ZipFile('raw_data/Food Images.zip', 'r')
+        images_zip = '/wots_cookin/ref_data/Food Images.zip'
+        file = get_path(images_zip)
+        zip = ZipFile(file, 'r')
         ifile = zip.open(f"Food Images/{recipe_image}.jpg")
         im = Image.open(ifile)
         img = np.array(im)
