@@ -12,6 +12,9 @@ from wots_cookin.word2vec_trainer import Trainer
 from wots_cookin.shortlist import *
 from wots_cookin.display import print_details
 
+st.markdown("""# Wots Cookin
+## Hey there! What's in your fridge?""")
+
 #audio record button
 record_button  = Button(label="Record", width=100)
 
@@ -124,17 +127,14 @@ if result:
             transcript = speech_to_text(config, audio)
 
             st.write(f'Recording: {transcript}')
-            print(transcript)
 
             #Filter dietary requirements
             shortlist_df = filter_diet_req(dietary_requirements, df)
             print(df.head(5))
-            print(df.tail(5))
 
             #filter recipe list for minimum number of ingredients
             shortlist_df = filter_min_ingredients(min_num_ingredients, shortlist_df)
             print(df.head(5))
-            print(df.tail(5))
 
             # Preprocess transcript into ingredients list
             ingredients = transcript.split()
@@ -146,16 +146,23 @@ if result:
             print(ing_vector)
 
             # Get shortlist recipes from model
-            print(df.head(5))
             shortlist_df = get_similar_recipes(ing_vector, shortlist_df['Vector_List'], shortlist_df)
             print(shortlist_df.shape)
 
+            # Create slider to allow the user to select the number of results
+            # in the results dataframe
+            results_count = st.slider('Select number of results', 1, 10, 5)
+
             #using search function to find no.1 matching recipe
-            top_recipes_df = shortlist_recipes(shortlist_df, ingredients)
+            top_recipes_df = shortlist_recipes(shortlist_df, ingredients, shortlist_len=results_count)
             print(top_recipes_df.shape)
-            print(top_recipes_df.head(1))
+
+            # and used in order to select the displayed lines
+            st.dataframe(top_recipes_df[['Title'
+                                         , 'Match_Score'
+                                         , 'Ingredients_Available']], 900)
 
             #print list of recipes including ingredients (flagging missing ingredients)
             #and instructions
-            st.title('Recipe Shortlist Details:')
+            st.title('Recipe Details:')
             print_details(top_recipes_df, ingredients)
