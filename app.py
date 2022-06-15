@@ -11,6 +11,7 @@ from wots_cookin.data import load_full_stopwords, remove_stopwords_from_list, re
 from wots_cookin.word2vec_trainer import Trainer
 from wots_cookin.shortlist import *
 from wots_cookin.display import print_details
+from PIL import Image
 
 # Load clean dataframe of recipes
 df = pd.read_pickle("ref_data/enriched_recipes.pkl")
@@ -26,8 +27,10 @@ print(f'{model} model loaded')
 
 # Main function for running app
 def main():
-    st.markdown("""## Hey there! What's in your fridge?""")
-
+    #set the page image and icon
+    st.set_page_config(page_title="Wots Cookin", page_icon="🍳")
+    image = Image.open('raw_data/Wots_Cookin1.png')
+    st.image(image,width=600)
     # Create audio record button
     record_button  = Button(label="Record", width=100)
     # Custom javascript to run audio recording on clicking 'record' and 'stop'
@@ -155,10 +158,14 @@ def main():
                                                 , shortlist_len=results_count)
                 print(f'Returning top results of {top_recipes_df.shape}')
 
-                # Display top results interactive dataframe
-                st.dataframe(top_recipes_df[['Title'
-                                            , 'Match'
-                                            , 'Ingredients_Available']], 900)
+                # Display top results html table
+                output_df = top_recipes_df[['Title'
+                                         , 'Match'
+                                         , 'Ingredients_Available']]
+                output_df.rename(columns={"Ingredients_Available": "Ingredients Available"},inplace=True)
+                style = output_df.style.hide_index()
+                st.write(style.to_html(), unsafe_allow_html=True)
+
 
                 # Print full version of individual recipes with
                 # missing ingredients flagged
