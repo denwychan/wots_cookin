@@ -81,7 +81,9 @@ class Trainer():
         self.set_corpus(bag_of_ingredients)
         self.get_recipes_vectors(bag_of_ingredients)
         print("Model trained!")
-        self.model.save("../ref_data/word2vec.model")
+        save_path = "/wots_cookin/ref_data/word2vec.model"
+        file = get_path(save_path)
+        self.model.save(file)
         print("Model saved!")
         return self
 
