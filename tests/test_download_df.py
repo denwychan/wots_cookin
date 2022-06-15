@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from wots_cookin.word2vec_trainer import model_topickle
 from wots_cookin.utils import get_path
 
 def test_df_shape():
@@ -57,22 +56,23 @@ def test_df_dtypes():
         for vector in vectors:
             assert type(vector) == np.float32 or type(vector) == np.float64
 
-def test_stopwords_removed():
-    """check that all stopwords have been removed from Bag_Of_Ingredients"""
+# def test_stopwords_removed():
+#     """check that all stopwords have been removed from Bag_Of_Ingredients"""
 
-    download_path = "/wots_cookin/ref_data/enriched_recipes.pkl"
-    file = get_path(download_path)
-    df = pd.read_pickle(file)
+#     download_path = "/wots_cookin/ref_data/enriched_recipes.pkl"
+#     file = get_path(download_path)
+#     df = pd.read_pickle(file)
 
-    boi_series = df.Bag_Of_Ingredients
+#     boi_series = df.Bag_Of_Ingredients
 
-    stopwords_path = "/wots_cookin/ref_data/full_stopwords.csv"
-    file = get_path(stopwords_path)
-    full_stopwords = list(pd.read_csv(file)['0'])
+#     stopwords_path = "/wots_cookin/ref_data/full_stopwords.csv"
+#     file = get_path(stopwords_path)
+#     full_stopwords = list(pd.read_csv(file)['0'])
+#     full_stopwords = remove_plurals(full_stopwords)
 
-    for boi in boi_series:
-        for word in boi:
-            assert word not in full_stopwords
+#     for boi in boi_series:
+#         for word in boi:
+#             assert word not in full_stopwords
 
 def test_dietary_tagging():
     """check that dietary tags have been applied and binary values (0 / 1)"""
