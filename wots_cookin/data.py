@@ -12,7 +12,7 @@ def load_data(nrows = None):
     Returns a pandas dataframe with empty or NA values automatically removed
     """
     # Load the raw csv file
-    recipes_path = "/raw_data/recipes.csv"
+    recipes_path = "/wots_cookin/raw_data/recipes.csv"
     file = get_path(recipes_path)
     df = pd.read_csv(file, nrows=nrows)
     df_len = df.shape[0]

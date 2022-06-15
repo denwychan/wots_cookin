@@ -81,7 +81,7 @@ class Trainer():
         self.set_corpus(bag_of_ingredients)
         self.get_recipes_vectors(bag_of_ingredients)
         print("Model trained!")
-        save_path = "/ref_data/word2vec.model"
+        save_path = "/wots_cookin/ref_data/word2vec.model"
         file = get_path(save_path)
         self.model.save(file)
         print("Model saved!")
@@ -97,7 +97,7 @@ def model_topickle(vector_size=50
     model = Trainer()
     model.train_model(boi, vector_size, min_count)
     df['Vector_List'] = model.recipes_vector_list
-    save_path = "/ref_data/enriched_recipes.pkl"
+    save_path = "/wots_cookin/ref_data/enriched_recipes.pkl"
     file = get_path(save_path)
     df.to_pickle(file)
     print('Recipes with vectors created!')
