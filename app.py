@@ -158,7 +158,6 @@ def main():
                 # Display top results interactive dataframe
                 st.dataframe(top_recipes_df[['Title'
                                             , 'Match'
-                                            , 'Match_Score'
                                             , 'Ingredients_Available']], 900)
 
                 # Print full version of individual recipes with
