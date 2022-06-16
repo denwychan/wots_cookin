@@ -10,7 +10,7 @@ credentials = service_account.Credentials.from_service_account_info(
 
 def speech_to_text(config, audio):
     """function to convert audio to text and execute print_sentences function"""
-    client = speech.SpeechClient()
+    client = speech.SpeechClient(credentials=credentials)
     response = client.recognize(config=config, audio=audio)
     for result in response.results:
         # The transcript of first alternative is returned
