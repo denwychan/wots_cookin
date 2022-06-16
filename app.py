@@ -162,7 +162,7 @@ def main():
                 output_df = top_recipes_df[['Title'
                                          , 'Match'
                                          , 'Ingredients_Available']]
-                output_df.rename(columns={"Ingredients_Available": "Ingredients Available"},inplace=True)
+                output_df.rename(columns={"Ingredients_Available": "Key Ingredients Available"},inplace=True)
                 style = output_df.style.hide_index()
                 st.write(style.to_html(), unsafe_allow_html=True)
 
