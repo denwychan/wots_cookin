@@ -1,4 +1,5 @@
 import base64
+from ftplib import error_temp
 import streamlit as st
 import pandas as pd
 from bokeh.models.widgets import Button
@@ -134,7 +135,13 @@ def main():
                     of ingredients filtering')
 
                 # Preprocess transcript into ingredients list and singularise
-                ingredients = transcript.split()
+                try:
+                    ingredients = transcript.split()
+                except AttributeError:
+                    error_msg = 'Sorry, did not register voice. Please try\
+                        again'
+                    print(error_msg)
+                    st.write(error_msg)
                 ingredients = remove_stopwords_from_list(ingredients, stopwords)
                 ingredients = remove_plurals(ingredients)
                 print(f'Searching {ingredients}...')
