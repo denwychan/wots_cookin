@@ -164,7 +164,8 @@ def main():
                     output_df = top_recipes_df[['Title'
                                             , 'Match'
                                             , 'Ingredients_Available']]
-                    output_df.rename(columns={"Ingredients_Available": "Key Ingredients Available"},inplace=True)
+                    output_df.rename(columns={"Ingredients_Available":
+                        "Key Ingredients Available"},inplace=True)
                     style = output_df.style.hide_index()
                     st.write(style.to_html(), unsafe_allow_html=True)
 
@@ -175,7 +176,7 @@ def main():
                     print_details(top_recipes_df, ingredients)
                 except:
                     error_msg = "Sorry, I didn't hear your gentle voice.\
-                        Please try again x"
+                        Please try again \U0001F618"
                     print(error_msg)
                     st.write(error_msg)
 
