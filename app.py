@@ -109,7 +109,7 @@ def main():
 
                 decoded = base64.b64decode(b64_str)
                 # Save file to audio_files folder locally
-                uploaded_file = 'audio_files/test.flac'
+                uploaded_file = 'ref_data/test.flac'
                 with open(uploaded_file,'wb') as f:
                     f.write(decoded)
                 # Convert file to flac and save it again

@@ -41,12 +41,12 @@ def print_details(df, ingredients):
 # Ingredients in this list will not be flagged as missing in the frontend
 # UI
 ignore_ingredients = ['salt', 'oil', 'sugar', 'water', 'black pepper',
-                          'butter', 'optional']
+                          'butter', 'optional', 'ground pepper']
 
 # Ingredients which start with one of the words from the below list will
 # not be flagged as missing in the frontend UI
 ignore_words = ['*', 'an', 'adjusted', 'divided', 'accompaniments:',
-                'Accompaniment:', 'or']
+                'Accompaniment:', 'or', 'to']
 
 def check_missing_ingredients(ingredient, ingredients):
     '''

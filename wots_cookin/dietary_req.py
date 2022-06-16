@@ -19,7 +19,7 @@ def dietary_tagging(df):
                 'duck','meat','ham','anchovies','snapper', 'bacon', 'turkey','salami',
                 'sausage', 'gelatine', 'Hot dog', 'jamon', 'prosciutto', 'anchovies',
                 'anchovy', 'mutton', 'turkey', 'venison', 'boar', 'bison', 'goose', 'rabbit', 'pheasant',
-                'ribs', 'veal','chorizo','hamburger'],
+                'ribs', 'veal','chorizo','hamburger', 'pancetta'],
         'Vegan': ['honey']
     }
 
