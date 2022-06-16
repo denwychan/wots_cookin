@@ -21,13 +21,16 @@ def print_details(df, ingredients):
         st.header(title)
 
         #Display the picture for that recipe
-        images_zip = '/wots_cookin/ref_data/Food Images.zip'
+        images_zip = '/ref_data/Food Images.zip'
         file = get_path(images_zip)
         zip = ZipFile(file, 'r')
-        ifile = zip.open(f"Food Images/{recipe_image}.jpg")
-        im = Image.open(ifile)
-        img = np.array(im)
-        st.image(img)
+        if recipe_image == "#NAME?":
+            print("No Image")
+        else:
+            ifile = zip.open(f"Food Images/{recipe_image}.jpg")
+            im = Image.open(ifile)
+            img = np.array(im)
+            st.image(img)
 
         #Display the ingredients and instructions
         st.subheader('Ingredients:')
