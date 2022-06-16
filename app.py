@@ -137,47 +137,47 @@ def main():
                 # Preprocess transcript into ingredients list and singularise
                 try:
                     ingredients = transcript.split()
-                except AttributeError:
-                    error_msg = 'Sorry, did not register voice. Please try\
-                        again'
+                    ingredients = remove_stopwords_from_list(ingredients, stopwords)
+                    ingredients = remove_plurals(ingredients)
+                    print(f'Searching {ingredients}...')
+
+                    # Vectorise the ingredients list form the transcript
+                    ing_vector = get_ingredients_vector(model, ingredients)
+                    print('Ingredients vectorised')
+
+                    # Get shortlist recipes from model
+                    shortlist_df = get_similar_recipes(ing_vector
+                                                    , shortlist_df['Vector_List']
+                                                    , shortlist_df)
+                    print(f'Returning dataframe of {shortlist_df.shape}')
+
+                    # Create slider to allow the user to select the number of
+                    # results displayed in the summary table
+                    results_count = st.slider('Select number of results', 1, 10, 5)
+
+                    # Shortlist the top results based on the match score
+                    top_recipes_df = shortlist_recipes(shortlist_df, ingredients
+                                                    , shortlist_len=results_count)
+                    print(f'Returning top results of {top_recipes_df.shape}')
+
+                    # Display top results html table
+                    output_df = top_recipes_df[['Title'
+                                            , 'Match'
+                                            , 'Ingredients_Available']]
+                    output_df.rename(columns={"Ingredients_Available": "Key Ingredients Available"},inplace=True)
+                    style = output_df.style.hide_index()
+                    st.write(style.to_html(), unsafe_allow_html=True)
+
+
+                    # Print full version of individual recipes with
+                    # missing ingredients flagged
+                    st.title('Recipe Details:')
+                    print_details(top_recipes_df, ingredients)
+                except:
+                    error_msg = "Sorry, I didn't hear your gentle voice.\
+                        Please try again x"
                     print(error_msg)
                     st.write(error_msg)
-                ingredients = remove_stopwords_from_list(ingredients, stopwords)
-                ingredients = remove_plurals(ingredients)
-                print(f'Searching {ingredients}...')
-
-                # Vectorise the ingredients list form the transcript
-                ing_vector = get_ingredients_vector(model, ingredients)
-                print('Ingredients vectorised')
-
-                # Get shortlist recipes from model
-                shortlist_df = get_similar_recipes(ing_vector
-                                                   , shortlist_df['Vector_List']
-                                                   , shortlist_df)
-                print(f'Returning dataframe of {shortlist_df.shape}')
-
-                # Create slider to allow the user to select the number of
-                # results displayed in the summary table
-                results_count = st.slider('Select number of results', 1, 10, 5)
-
-                # Shortlist the top results based on the match score
-                top_recipes_df = shortlist_recipes(shortlist_df, ingredients
-                                                , shortlist_len=results_count)
-                print(f'Returning top results of {top_recipes_df.shape}')
-
-                # Display top results html table
-                output_df = top_recipes_df[['Title'
-                                         , 'Match'
-                                         , 'Ingredients_Available']]
-                output_df.rename(columns={"Ingredients_Available": "Key Ingredients Available"},inplace=True)
-                style = output_df.style.hide_index()
-                st.write(style.to_html(), unsafe_allow_html=True)
-
-
-                # Print full version of individual recipes with
-                # missing ingredients flagged
-                st.title('Recipe Details:')
-                print_details(top_recipes_df, ingredients)
 
 if __name__ == '__main__':
     main()
