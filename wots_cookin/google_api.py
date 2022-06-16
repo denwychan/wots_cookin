@@ -1,5 +1,12 @@
 from google.cloud import speech_v1 as speech
 import pandas as pd
+from google.oauth2 import service_account
+from streamlit import secrets
+
+# Create GCP client
+credentials = service_account.Credentials.from_service_account_info(
+    secrets["gcp_service_account"]
+)
 
 def speech_to_text(config, audio):
     """function to convert audio to text and execute print_sentences function"""
@@ -9,13 +16,14 @@ def speech_to_text(config, audio):
         # The transcript of first alternative is returned
         return result.alternatives[0].transcript
 
-#downloading list of ingredients with count and splitting by popularity for model optimizing
+# Downloading list of ingredients with count and splitting by popularity
+# for model optimizing
 df = pd.read_csv('ref_data/ingredients_list.csv')
 top_list = list(df.iloc[0:1000, 1])
 mid_list = list(df.iloc[1000:2000, 1])
 bottom_list = list(df.iloc[2000:, 1])
 
-#speech configeration settings, boosted for ingredient words
+# Speech configeration settings, boosted for ingredient words
 config = speech.RecognitionConfig(language_code = "en-GB",
             sample_rate_hertz = 48000,
             model = 'default',
