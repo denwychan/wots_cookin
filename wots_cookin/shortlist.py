@@ -1,3 +1,4 @@
+from operator import le
 import numpy as np
 from numpy.linalg import norm
 import pandas as pd
@@ -124,6 +125,8 @@ def shortlist_recipes(df, transcript, shortlist_len=5):
 
         # Calculate score relative to total ingredients required
         score = pos_matches / length
+        if pos_matches > length:
+            pos_matches == length
         score_list.append(score)
         ing_available = f"{pos_matches} / {length}"
         ing_available_list.append(ing_available)
@@ -131,7 +134,7 @@ def shortlist_recipes(df, transcript, shortlist_len=5):
         # Apply qualitative scoring
         Top = 'Excellent'
         Mid = 'Good'
-        Low = 'Not Good'
+        Low = 'OK'
         score_dict = {Top: 0.75, Mid: 0.5}
 
         score_word = Low
