@@ -14,7 +14,7 @@ from wots_cookin.display import print_details
 from PIL import Image
 
 # Load clean dataframe of recipes
-df = pd.read_pickle("/ref_data//enriched_recipes.pkl")
+df = pd.read_pickle("ref_data/enriched_recipes.pkl")
 df.drop(columns = ['index'], inplace = True)
 print(f'Loading dataframe of {df.shape}')
 
@@ -22,14 +22,14 @@ print(f'Loading dataframe of {df.shape}')
 stopwords = load_full_stopwords()
 
 # Load pretrained model
-model = Word2Vec.load("/ref_data//word2vec.model")
+model = Word2Vec.load("ref_data/word2vec.model")
 print(f'{model} model loaded')
 
 # Main function for running app
 def main():
     #set the page image and icon
     st.set_page_config(page_title="Wots Cookin", page_icon="🍳")
-    image = Image.open('/ref_data//Wots_Cookin1.png')
+    image = Image.open('ref_data/Wots_Cookin1.png')
     st.image(image,width=600)
     # Create audio record button
     record_button  = Button(label="Record", width=100)
