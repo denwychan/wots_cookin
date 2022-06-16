@@ -7,4 +7,4 @@ raw_data/
 .env
 test_code/
 ref_data/*.flac
-ref_data/*.zip
+# ref_data/*.zip
