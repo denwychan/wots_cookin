@@ -1,8 +1,38 @@
-# Data analysis
-- Document here the project: wots_cookin
-- Description: Project Description
-- Data Source:
-- Type of analysis:
+# Wots Cookin
+
+Wots Cookin is an ingredients-to-recipes recommender, which gives the user ideas for meals and drinks based on a list of input ingredients.
+
+## User Journey
+
+- The user lists the ingredients via speech into the web app
+- Wots Cookin searches the recipe bank
+- Wots Cookin returns an ordered list of best matching recipes with a match score
+
+## High Level Architecture
+
+1. Wots Cookin is built on a Streamlit web app
+2. The user's voice is translated into text via the Google speech-to-text API
+3. The ingredients are used as an input into the Wots Cookin search algorithms
+4. The Streamlit web app displays the results back to the user
+
+## Data Source
+A small Kaggle [dataset](https://www.kaggle.com/datasets/pes12017000148/food-ingredients-and-recipe-dataset-with-images) with approximately 13.5k records is used for the Wots Cookin recipes bank. The source data has 6 features:
+
+1. Row number
+2. Title - for the food dish
+3. Ingredients
+4. Instructions
+5. Image Name
+6. Cleaned Ingredients - a comma separated version of the 'Ingredients' feature
+
+The dataset is cleaned and enriched further for Wots Cookin. Please see more in the Workflow section.
+
+## Workflow
+
+## UI Elements
+
+
+
 
 Please document the project the better you can.
 
