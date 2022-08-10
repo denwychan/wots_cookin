@@ -8,7 +8,7 @@ Wots Cookin is an ingredients-to-recipes recommender, which gives the user ideas
 
 - The user lists the ingredients via speech into the web app
 - Wots Cookin searches the recipe bank
-- Wots Cookin returns an ordered list of best matching recipes with a match score
+- Wots Cookin returns an ordered list of best matching recipes with a qualitative match score
 
 ## High Level Architecture
 
@@ -44,7 +44,7 @@ This step involves removing any capitalisation, punctuation, formatting and stop
 This involves creating new features:
 
 - ***Dietary requirements*** by tagging allergen information (e.g. dairy, gluten) and dietary restrictions (e.g. vegetarian, vegan)
-- ***Ingredients vector*** by representing characteristics of a ingredient (e.g. salty, sweet, spicy, mild) as vectors that can be compared mathematically
+- ***Ingredients vector*** by representing characteristics of a ingredient (e.g. salty, sweet, spicy, mild) as vectors that can be compared and computed mathematically
 
 <img src="readme_images/salty_sweet_as_vectors.png" alt="Foods represented as vectors and plotted against sweet and salty axis on a graph"/>
 
@@ -54,13 +54,13 @@ This step involves filtering out recipes based on dietary and minimum ingredient
 
 4. ### Shortlisting
 
-This step involves shortlisting the recipes by a cosine similarity score calculated by comparing the ingredients provided by the user with the Wots Cookin recipes bank. This score is calculated using the vectorised ingredients.
+This step involves shortlisting the recipes by a cosine similarity score calculated by comparing the ingredients provided by the user with the Wots Cookin recipes bank. This score is calculated using the vectorised ingredients (refer to in 'Ingredients vector' of step 2 of data workflow)
 
 5. ### Scoring
 
-This step involves calculating a match accuracy score between the ingredients provided by the user and the shortlished recipes using:
+This step involves calculating an accuracy score between the ingredients provided by the user and the shortlished recipes using the following formula:
 
-    positive hits / number of ingredients in a recipe
+    number of positive matches / number of ingredients in a recipe
 
 This score is translated into the following qualitative score:
 
@@ -70,13 +70,13 @@ This score is translated into the following qualitative score:
 
 6. ### Final Results
 
-The final results are displayed as a table of top results including:
+The final results are displayed as a table of top results, including:
 
 - Recipe title
 - Qualitative match score (i.e. excellent, good, ok)
 - Key ingredients available
 
-The full recipes are displayed as text including:
+The full recipes are displayed as text, including:
 
 - Recipe title
 - Image for the final dish
@@ -85,26 +85,24 @@ The full recipes are displayed as text including:
 
 7. ### Let's Cook!
 
-This part the user will have to do themselves 😉
+Something for the user to do themselves 😉
 
 ## UI Elements
 
 Wots Cookin contains fully interactive UI widgets for users to:
 
 - Convert their voice to text using a single record button and voice recorder
-    - this is implemented using custom Javascript so that the button and recorder can interact with each other
+    - implemented using custom Javascript so that the button and recorder can interact with each other
     - the start and stopping of the recorder is events-triggered based on the text on the record button
-    - the voice recording is pre-processed using the first step in the data workflow before the search process
+    - the voice recording is pre-processed using the first step in the data workflow prior to the search process
 - Filter by dietary requirements (i.e. 'Vegetarian', 'Vegan', 'Gluten free', 'Nut free','No shellfish', 'No eggs', 'Dairy free', 'No soy' ) using a multiselect side-bar checklist
-- Filter by the minimum number of ingredients in a recipe (up to 10) using a  side-far select box
+- Filter by the minimum number of ingredients in a recipe (up to 10) using a  side-bar select box
 - Select the number of results displayed
 - Review the search results as a summary table and in full with instructions
 
 # Startup the project
 
-The initial setup.
-
-Create virtualenv and install the project:
+For the initial setup, create virtualenv and install the project:
 ```bash
 sudo apt-get install virtualenv python-pip python-dev
 deactivate; virtualenv ~/venv ; source ~/venv/bin/activate ;\
@@ -117,7 +115,7 @@ make clean install test
 ```
 
 Check for wots_cookin in gitlab.com/{group}.
-If your project is not set please add it:
+If your project is not set up, please add it:
 
 - Create a new project on `gitlab.com/{group}/wots_cookin`
 - Then populate it:
