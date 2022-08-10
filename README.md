@@ -4,11 +4,15 @@ Wots Cookin is an ingredients-to-recipes recommender, which gives the user ideas
 
 ## User Journey
 
+<img src="readme_images/user_journey.png" alt="Julio's user journey in three steps"/>
+
 - The user lists the ingredients via speech into the web app
 - Wots Cookin searches the recipe bank
 - Wots Cookin returns an ordered list of best matching recipes with a match score
 
 ## High Level Architecture
+
+<img src="readme_images/high_level_architecture.png" alt="Wots Coookin's high level architecture"/>
 
 1. Wots Cookin is built on a Streamlit web app
 2. The user's voice is translated into text via the Google speech-to-text API
@@ -29,6 +33,8 @@ The dataset is cleaned and enriched further for Wots Cookin. Please see more in 
 
 ## Workflow
 
+<img src="readme_images/chef_data_workflow.png" alt="The data workflow for Wots Cookin"/>
+
 1. ### Data Preprocessing
 
 This step involves removing any capitalisation, punctuation, formatting and stopwords (e.g. I, you, a pinch of, a dash of), in order to generate a new distilled feature 'bag of ingredients' required for the search process
@@ -37,8 +43,10 @@ This step involves removing any capitalisation, punctuation, formatting and stop
 
 This involves creating new features:
 
-- **Dietary requirements** by tagging allergen information (e.g. dairy, gluten) and dietary restrictions (e.g. vegetarian, vegan)
-- **Ingredients vector** by representing characteristics of a ingredient (e.g. salty, sweet, spicy, mild) as vectors that can be compared mathematically
+- ***Dietary requirements*** by tagging allergen information (e.g. dairy, gluten) and dietary restrictions (e.g. vegetarian, vegan)
+- ***Ingredients vector*** by representing characteristics of a ingredient (e.g. salty, sweet, spicy, mild) as vectors that can be compared mathematically
+
+<img src="readme_images/salty_sweet_as_vectors.png" alt="Foods represented as vectors and plotted against sweet and salty axis on a graph"/>
 
 3. ### Allergens Filtering
 
